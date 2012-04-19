@@ -8,6 +8,7 @@ winston = require 'winston'
 optimist = require('optimist')
   .options('output', alias: 'o', default: 'output', describe: 'Name for the output file.')
   .options('log', alias: 'l', default: 'info', describe: 'Log level (debug, info, notice, warning, error).')
+  .options('autoplay', alias: 'a', default: null, describe: 'Autoplay sprite name')
   .options('help', alias: 'h', describe: 'Show this help message.')
 argv = optimist.argv
 
@@ -50,8 +51,8 @@ appendFile = (src, dest, cb) ->
       return cb msg: 'File could not be added', file: src, retcode: code, signal: signal if code
       winston.info 'File added OK', file: src
       
-      json.spritemap[name] = start: offsetCursor, end: offsetCursor + duration
       name = path.basename(src).replace /\..+$/, ''
+      json.spritemap[name] = start: offsetCursor, end: offsetCursor + duration, loop: name == argv.autoplay
       offsetCursor += duration
       appendSilence Math.ceil(duration) - duration + 1, dest, cb
 
@@ -116,6 +117,8 @@ async.forEachSeries files, (file, cb) ->
     exportFile tempFile, argv.output, ext, opt, cb
   , (err) ->
     return winston.error 'Error exporting file', err if err
+    
+    json.autoplay = argv.autoplay if argv.autoplay
 
     jsonfile = argv.output + '.json'
     fs.writeFileSync jsonfile, JSON.stringify json, null, 2
