@@ -69,6 +69,19 @@ exportFile = (src, dest, ext, opt, cb) ->
   ffmpeg.on 'exit', (code, signal) ->
     return cb msg: 'Error exporting file', format: ext, retcode: code, signal: signal if code
     winston.info "Exported #{ext} OK", file: outfile
+    if ext == 'aiff'
+      exportFileCaf outfile, dest + '.caf', (err) ->
+        fs.unlinkSync outfile # Aiff itself is not needed.
+        cb err
+    else
+      cb()
+
+exportFileCaf = (src, dest, cb) ->
+  return unless process.platform == 'darwin'
+  afconvert = spawn 'afconvert', ['-f', 'caff', '-d', 'ima4', src, dest]
+  afconvert.on 'exit', (code, signal) ->
+    return cb msg: 'Error exporting file', format: 'caf', retcode: code, signal: signal if code
+    winston.info 'Exported caf OK', file: dest
     cb()
 
 numChannels = 1 # Mono support only for now.
