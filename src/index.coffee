@@ -49,8 +49,19 @@ appendFile = (src, dest, cb) ->
     ffmpeg.on 'exit', (code, signal) ->
       return cb msg: 'File could not be added', file: src, retcode: code, signal: signal if code
       winston.info 'File added OK', file: src
-      cb()
+      
+      appendSilence Math.ceil(duration) - duration + 1, dest, cb
 
+appendSilence = (duration, dest, cb) ->
+  ffmpeg = spawn 'ffmpeg', ['-f', 's16le', '-i', 'pipe:0'].concat(wavArgs).concat 'pipe:1'
+  buffer = new Buffer Math.round 44100 * 2 * numChannels * duration
+  buffer.fill null
+  ffmpeg.stdin.end buffer
+  ffmpeg.stdout.pipe fs.createWriteStream dest, flags: 'a'
+  ffmpeg.on 'exit', (code, signal) ->
+    return cb msg: 'Error adding silence gap', retcode: code, signal: signal if code
+    winston.info duration.toFixed(2) + 's silence gap added OK'
+    cb()
 
 numChannels = 1 # Mono support only for now.
 wavArgs = ['-ar', '44100', '-acodec', 'pcm_s16le', '-ac', numChannels, '-f', 's16le']
