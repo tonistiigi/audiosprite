@@ -1,8 +1,14 @@
 {
   "name": "audiosprite",
   "description": "Concat small audio files into single file and export in many formats.",
+  "keywords": [
+    "audio",
+    "audio-sprite",
+    "jukebox",
+    "ffmpeg"
+  ],
   "author": "Tõnis Tiigi <tonistiigi@gmail.com>",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "licenses": [
     {
       "type": "MIT",
