@@ -1,21 +1,21 @@
 {
-  "name": "audio-sprite",
+  "name": "audiosprite",
   "description": "Concat small audio files into single file and export in many formats.",
   "author": "Tõnis Tiigi <tonistiigi@gmail.com>",
   "version": "0.0.1",
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/github.com/tonistiigi/audio-sprite/raw/master/LICENSE"
+      "url": "https://github.com/github.com/tonistiigi/audiosprite/raw/master/LICENSE"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/tonistiigi/audio-sprite.git"
+    "url": "git://github.com/tonistiigi/audiosprite.git"
   },
   "main": "./lib/index.js",
   "bin": {
-    "audio-sprite": "./lib/audio-sprite.js"
+    "audiosprite": "./lib/audiosprite.js"
   },
   "dependencies": {
     "optimist": "~0.3.1",

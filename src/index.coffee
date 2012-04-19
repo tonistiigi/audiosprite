@@ -22,7 +22,7 @@ winston.debug 'Parsed arguments', argv
 files = _.uniq argv._
 if argv.help || !files.length
   winston.error 'No input files specified.' unless argv.help
-  winston.info 'Usage: audio-sprite [options] file1.mp3 file2.mp3 *.wav'
+  winston.info 'Usage: audiosprite [options] file1.mp3 file2.mp3 *.wav'
   winston.info optimist.help()
   return
 
@@ -124,7 +124,7 @@ processFiles = ->
 offsetCursor = 0
 numChannels = 1 # Mono support only for now.
 wavArgs = ['-ar', '44100', '-acodec', 'pcm_s16le', '-ac', numChannels, '-f', 's16le']
-tempFile = mktemp 'audio-sprite'
+tempFile = mktemp 'audiosprite'
 winston.debug 'Created temporary file', file: tempFile
 json = resources: [], spritemap: {}
 
