@@ -63,6 +63,14 @@ appendSilence = (duration, dest, cb) ->
     winston.info duration.toFixed(2) + 's silence gap added OK'
     cb()
 
+exportFile = (src, dest, ext, opt, cb) ->
+  outfile = dest + '.' + ext
+  ffmpeg = spawn 'ffmpeg', ['-y', '-f', 's16le', '-i', src].concat(opt).concat outfile
+  ffmpeg.on 'exit', (code, signal) ->
+    return cb msg: 'Error exporting file', format: ext, retcode: code, signal: signal if code
+    winston.info "Exported #{ext} OK", file: outfile
+    cb()
+
 numChannels = 1 # Mono support only for now.
 wavArgs = ['-ar', '44100', '-acodec', 'pcm_s16le', '-ac', numChannels, '-f', 's16le']
 tempFile = mktemp 'audio-sprite'
@@ -73,5 +81,20 @@ async.forEachSeries files, (file, cb) ->
 , (err) ->
   return winston.error 'Error processing file', err if err
 
-  #fs.unlinkSync tempFile
-  winston.info 'All done'
+  formats = [
+    'aiff'
+    'ac3 -acodec ac3'
+    'mp3 -ab 128 -f mp3'
+    'm4a'
+    'ogg -acodec libvorbis -f ogg'
+  ]
+
+  async.forEachSeries formats, (format, cb) ->
+    [ext, opt...] = format.split ' '
+    winston.debug 'Start export', format: ext
+    exportFile tempFile, argv.output, ext, opt, cb
+  , (err) ->
+    return winston.error 'Error exporting file', err if err
+
+    #fs.unlinkSync tempFile
+    winston.info 'All done'
