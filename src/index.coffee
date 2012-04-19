@@ -9,6 +9,7 @@ optimist = require('optimist')
   .options('output', alias: 'o', default: 'output', describe: 'Name for the output file.')
   .options('log', alias: 'l', default: 'info', describe: 'Log level (debug, info, notice, warning, error).')
   .options('autoplay', alias: 'a', default: null, describe: 'Autoplay sprite name')
+  .options('silence', alias: 's', default: 0, describe: 'Add special "silence" track with specified duration.')
   .options('help', alias: 'h', describe: 'Show this help message.')
 argv = optimist.argv
 
@@ -91,6 +92,35 @@ exportFileCaf = (src, dest, cb) ->
     winston.info 'Exported caf OK', file: dest
     cb()
 
+processFiles = ->  
+  async.forEachSeries files, (file, cb) ->
+    appendFile file, tempFile, cb
+  , (err) ->
+    return winston.error 'Error processing file', err if err
+
+    formats = [
+      'aiff'
+      'ac3 -acodec ac3'
+      'mp3 -ab 128 -f mp3'
+      'm4a'
+      'ogg -acodec libvorbis -f ogg'
+    ]
+
+    async.forEachSeries formats, (format, cb) ->
+      [ext, opt...] = format.split ' '
+      winston.debug 'Start export', format: ext
+      exportFile tempFile, argv.output, ext, opt, cb
+    , (err) ->
+      return winston.error 'Error exporting file', err if err
+
+      json.autoplay = argv.autoplay if argv.autoplay
+
+      jsonfile = argv.output + '.json'
+      fs.writeFileSync jsonfile, JSON.stringify json, null, 2
+      winston.info 'Exported json OK', file: jsonfile
+      fs.unlinkSync tempFile
+      winston.info 'All done'
+
 offsetCursor = 0
 numChannels = 1 # Mono support only for now.
 wavArgs = ['-ar', '44100', '-acodec', 'pcm_s16le', '-ac', numChannels, '-f', 's16le']
@@ -98,30 +128,9 @@ tempFile = mktemp 'audio-sprite'
 winston.debug 'Created temporary file', file: tempFile
 json = resources: [], spritemap: {}
 
-async.forEachSeries files, (file, cb) ->
-  appendFile file, tempFile, cb
-, (err) ->
-  return winston.error 'Error processing file', err if err
-
-  formats = [
-    'aiff'
-    'ac3 -acodec ac3'
-    'mp3 -ab 128 -f mp3'
-    'm4a'
-    'ogg -acodec libvorbis -f ogg'
-  ]
-
-  async.forEachSeries formats, (format, cb) ->
-    [ext, opt...] = format.split ' '
-    winston.debug 'Start export', format: ext
-    exportFile tempFile, argv.output, ext, opt, cb
-  , (err) ->
-    return winston.error 'Error exporting file', err if err
-    
-    json.autoplay = argv.autoplay if argv.autoplay
-
-    jsonfile = argv.output + '.json'
-    fs.writeFileSync jsonfile, JSON.stringify json, null, 2
-    winston.info 'Exported json OK', file: jsonfile
-    fs.unlinkSync tempFile
-    winston.info 'All done'
+if argv.silence
+  json.spritemap.silence = start: 0, end: argv.silence, loop: true
+  json.autoplay = 'silence' unless argv.autoplay
+  appendSilence argv.silence + 1, tempFile, processFiles
+else
+  processFiles()
