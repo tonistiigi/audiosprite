@@ -50,6 +50,9 @@ appendFile = (src, dest, cb) ->
       return cb msg: 'File could not be added', file: src, retcode: code, signal: signal if code
       winston.info 'File added OK', file: src
       
+      json.spritemap[name] = start: offsetCursor, end: offsetCursor + duration
+      name = path.basename(src).replace /\..+$/, ''
+      offsetCursor += duration
       appendSilence Math.ceil(duration) - duration + 1, dest, cb
 
 appendSilence = (duration, dest, cb) ->
@@ -61,6 +64,7 @@ appendSilence = (duration, dest, cb) ->
   ffmpeg.on 'exit', (code, signal) ->
     return cb msg: 'Error adding silence gap', retcode: code, signal: signal if code
     winston.info duration.toFixed(2) + 's silence gap added OK'
+    offsetCursor += duration
     cb()
 
 exportFile = (src, dest, ext, opt, cb) ->
@@ -71,9 +75,11 @@ exportFile = (src, dest, ext, opt, cb) ->
     winston.info "Exported #{ext} OK", file: outfile
     if ext == 'aiff'
       exportFileCaf outfile, dest + '.caf', (err) ->
+        json.resources.push dest + '.caf'
         fs.unlinkSync outfile # Aiff itself is not needed.
         cb err
     else
+      json.resources.push outfile
       cb()
 
 exportFileCaf = (src, dest, cb) ->
@@ -84,10 +90,12 @@ exportFileCaf = (src, dest, cb) ->
     winston.info 'Exported caf OK', file: dest
     cb()
 
+offsetCursor = 0
 numChannels = 1 # Mono support only for now.
 wavArgs = ['-ar', '44100', '-acodec', 'pcm_s16le', '-ac', numChannels, '-f', 's16le']
 tempFile = mktemp 'audio-sprite'
 winston.debug 'Created temporary file', file: tempFile
+json = resources: [], spritemap: {}
 
 async.forEachSeries files, (file, cb) ->
   appendFile file, tempFile, cb
@@ -109,5 +117,8 @@ async.forEachSeries files, (file, cb) ->
   , (err) ->
     return winston.error 'Error exporting file', err if err
 
-    #fs.unlinkSync tempFile
+    jsonfile = argv.output + '.json'
+    fs.writeFileSync jsonfile, JSON.stringify json, null, 2
+    winston.info 'Exported json OK', file: jsonfile
+    fs.unlinkSync tempFile
     winston.info 'All done'
