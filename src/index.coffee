@@ -74,13 +74,13 @@ exportFile = (src, dest, ext, opt, cb) ->
   ffmpeg = spawn 'ffmpeg', ['-y', '-f', 's16le', '-i', src].concat(opt).concat outfile
   ffmpeg.on 'exit', (code, signal) ->
     return cb msg: 'Error exporting file', format: ext, retcode: code, signal: signal if code
-    winston.info "Exported #{ext} OK", file: outfile
     if ext == 'aiff'
       exportFileCaf outfile, dest + '.caf', (err) ->
         json.resources.push dest + '.caf'
         fs.unlinkSync outfile # Aiff itself is not needed.
         cb err
     else
+      winston.info "Exported #{ext} OK", file: outfile
       json.resources.push outfile
       cb()
 
