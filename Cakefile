@@ -1,5 +1,5 @@
 fs            = require 'fs'
-{print}       = require 'sys'
+{print}       = require 'util'
 {spawn, exec} = require 'child_process'
 
 build = (watch, callback) ->
