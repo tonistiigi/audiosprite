@@ -10,6 +10,8 @@ optimist = require('optimist')
   .options('log', alias: 'l', default: 'info', describe: 'Log level (debug, info, notice, warning, error).')
   .options('autoplay', alias: 'a', default: null, describe: 'Autoplay sprite name')
   .options('silence', alias: 's', default: 0, describe: 'Add special "silence" track with specified duration.')
+  .options('samplerate', alias: 'ar', default: 41000, describe: 'Sample rate.')
+  .options('channels', alias: 'ac', default: 1, describe: 'Number of channels (1=mono, 2=stereo).')
   .options('help', alias: 'h', describe: 'Show this help message.')
 argv = optimist.argv
 
@@ -18,6 +20,9 @@ winston.remove winston.transports.Console
 winston.add winston.transports.Console, colorize: true, level: argv.log, handleExceptions: true
 
 winston.debug 'Parsed arguments', argv
+
+SAMPLE_RATE = 44100
+NUM_CHANNELS = 1
 
 files = _.uniq argv._
 if argv.help || !files.length
@@ -40,17 +45,15 @@ spawn = (name, opt) ->
 appendFile = (src, dest, cb) ->
   winston.debug 'Start processing', file: src
   duration = 0
-  path.exists src, (exists) ->
+  fs.exists src, (exists) ->
     return cb msg: 'File does not exist' , file: src unless exists
+    size = 0
     ffmpeg = spawn 'ffmpeg', ['-i', path.resolve src].concat(wavArgs).concat 'pipe:'
     ffmpeg.stdout.pipe fs.createWriteStream dest, flags: 'a'
-    ffmpeg.stderr.on 'data', (data) ->
-      if match = data.toString('utf8').match /\s*Duration:\s+(\d+):(\d+):(\d+\.\d+)/
-        duration = parseInt(match[1], 10) * 3600 + parseInt(match[2], 10) * 60 + parseFloat(match[3])
-        winston.debug 'Parsed duration', file: src, duration: duration
+    ffmpeg.stdout.on 'data', (data) -> size += data.length
     ffmpeg.on 'exit', (code, signal) ->
       return cb msg: 'File could not be added', file: src, retcode: code, signal: signal if code
-      winston.info 'File added OK', file: src
+      winston.info 'File added OK', file: src, duration: (size / SAMPLE_RATE)
       
       name = path.basename(src).replace /\..+$/, ''
       json.spritemap[name] = start: offsetCursor, end: offsetCursor + duration, loop: name == argv.autoplay
@@ -59,7 +62,7 @@ appendFile = (src, dest, cb) ->
 
 appendSilence = (duration, dest, cb) ->
   ffmpeg = spawn 'ffmpeg', ['-f', 's16le', '-i', 'pipe:0'].concat(wavArgs).concat 'pipe:1'
-  buffer = new Buffer Math.round 44100 * 2 * numChannels * duration
+  buffer = new Buffer Math.round SAMPLE_RATE * 2 * NUM_CHANNELS * duration
   buffer.fill null
   ffmpeg.stdin.end buffer
   ffmpeg.stdout.pipe fs.createWriteStream dest, flags: 'a'
@@ -118,12 +121,11 @@ processFiles = ->
       jsonfile = argv.output + '.json'
       fs.writeFileSync jsonfile, JSON.stringify json, null, 2
       winston.info 'Exported json OK', file: jsonfile
-      fs.unlinkSync tempFile
+      #fs.unlinkSync tempFile
       winston.info 'All done'
 
 offsetCursor = 0
-numChannels = 1 # Mono support only for now.
-wavArgs = ['-ar', '44100', '-acodec', 'pcm_s16le', '-ac', numChannels, '-f', 's16le']
+wavArgs = ['-ar', SAMPLE_RATE, '-ac', NUM_CHANNELS, '-f', 's16le']
 tempFile = mktemp 'audiosprite'
 winston.debug 'Created temporary file', file: tempFile
 json = resources: [], spritemap: {}
