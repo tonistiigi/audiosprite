@@ -10,8 +10,8 @@ optimist = require('optimist')
   .options('log', alias: 'l', default: 'info', describe: 'Log level (debug, info, notice, warning, error).')
   .options('autoplay', alias: 'a', default: null, describe: 'Autoplay sprite name')
   .options('silence', alias: 's', default: 0, describe: 'Add special "silence" track with specified duration.')
-  .options('samplerate', alias: 'ar', default: 41000, describe: 'Sample rate.')
-  .options('channels', alias: 'ac', default: 1, describe: 'Number of channels (1=mono, 2=stereo).')
+  .options('samplerate', alias: 'r', default: 44100, describe: 'Sample rate.')
+  .options('channels', alias: 'c', default: 1, describe: 'Number of channels (1=mono, 2=stereo).')
   .options('help', alias: 'h', describe: 'Show this help message.')
 argv = optimist.argv
 
@@ -21,8 +21,8 @@ winston.add winston.transports.Console, colorize: true, level: argv.log, handleE
 
 winston.debug 'Parsed arguments', argv
 
-SAMPLE_RATE = 44100
-NUM_CHANNELS = 1
+SAMPLE_RATE = parseInt argv.samplerate
+NUM_CHANNELS = parseInt argv.channels
 
 files = _.uniq argv._
 if argv.help || !files.length
@@ -44,16 +44,16 @@ spawn = (name, opt) ->
 # Append s16le formatted source file to the destination file.
 appendFile = (src, dest, cb) ->
   winston.debug 'Start processing', file: src
-  duration = 0
+  size = 0
   fs.exists src, (exists) ->
     return cb msg: 'File does not exist' , file: src unless exists
-    size = 0
     ffmpeg = spawn 'ffmpeg', ['-i', path.resolve src].concat(wavArgs).concat 'pipe:'
     ffmpeg.stdout.pipe fs.createWriteStream dest, flags: 'a'
     ffmpeg.stdout.on 'data', (data) -> size += data.length
     ffmpeg.on 'exit', (code, signal) ->
       return cb msg: 'File could not be added', file: src, retcode: code, signal: signal if code
-      winston.info 'File added OK', file: src, duration: (size / SAMPLE_RATE)
+      duration = size / SAMPLE_RATE / NUM_CHANNELS / 2
+      winston.info 'File added OK', file: src, duration: duration
       
       name = path.basename(src).replace /\..+$/, ''
       json.spritemap[name] = start: offsetCursor, end: offsetCursor + duration, loop: name == argv.autoplay
@@ -61,20 +61,18 @@ appendFile = (src, dest, cb) ->
       appendSilence Math.ceil(duration) - duration + 1, dest, cb
 
 appendSilence = (duration, dest, cb) ->
-  ffmpeg = spawn 'ffmpeg', ['-f', 's16le', '-i', 'pipe:0'].concat(wavArgs).concat 'pipe:1'
   buffer = new Buffer Math.round SAMPLE_RATE * 2 * NUM_CHANNELS * duration
   buffer.fill null
-  ffmpeg.stdin.end buffer
-  ffmpeg.stdout.pipe fs.createWriteStream dest, flags: 'a'
-  ffmpeg.on 'exit', (code, signal) ->
-    return cb msg: 'Error adding silence gap', retcode: code, signal: signal if code
-    winston.info duration.toFixed(2) + 's silence gap added OK'
+  writeStream = fs.createWriteStream dest, flags: 'a'
+  writeStream.end buffer
+  writeStream.on 'close', ->
+    winston.info 'Silence gap added', duration: duration
     offsetCursor += duration
     cb()
-
+  
 exportFile = (src, dest, ext, opt, cb) ->
   outfile = dest + '.' + ext
-  ffmpeg = spawn 'ffmpeg', ['-y', '-f', 's16le', '-i', src].concat(opt).concat outfile
+  ffmpeg = spawn 'ffmpeg', ['-y', '-ac', NUM_CHANNELS, '-f', 's16le', '-i', src].concat(opt).concat outfile
   ffmpeg.on 'exit', (code, signal) ->
     return cb msg: 'Error exporting file', format: ext, retcode: code, signal: signal if code
     if ext == 'aiff'
@@ -121,7 +119,7 @@ processFiles = ->
       jsonfile = argv.output + '.json'
       fs.writeFileSync jsonfile, JSON.stringify json, null, 2
       winston.info 'Exported json OK', file: jsonfile
-      #fs.unlinkSync tempFile
+      fs.unlinkSync tempFile
       winston.info 'All done'
 
 offsetCursor = 0
