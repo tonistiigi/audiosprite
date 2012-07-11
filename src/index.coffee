@@ -1,6 +1,7 @@
 fs = require 'fs'
 path = require 'path'
 child_process = require 'child_process'
+util = require 'util'
 async = require 'async'
 {_} = require 'underscore'
 winston = require 'winston'
@@ -12,6 +13,7 @@ optimist = require('optimist')
   .options('silence', alias: 's', default: 0, describe: 'Add special "silence" track with specified duration.')
   .options('samplerate', alias: 'r', default: 44100, describe: 'Sample rate.')
   .options('channels', alias: 'c', default: 1, describe: 'Number of channels (1=mono, 2=stereo).')
+  .options('rawparts', alias: 'p', default: '', describe: 'Include raw slices(for Web Audio API) in specified formats.')
   .options('help', alias: 'h', describe: 'Show this help message.')
 argv = optimist.argv
 
@@ -41,24 +43,30 @@ spawn = (name, opt) ->
   winston.debug 'Spawn', cmd: name + ' ' + opt.join ' '
   child_process.spawn name, opt
 
-# Append s16le formatted source file to the destination file.
-appendFile = (src, dest, cb) ->
+makeRawAudioFile = (src, cb) ->
   winston.debug 'Start processing', file: src
-  size = 0
+  dest = mktemp 'audiosprite'
   fs.exists src, (exists) ->
     return cb msg: 'File does not exist' , file: src unless exists
     ffmpeg = spawn 'ffmpeg', ['-i', path.resolve src].concat(wavArgs).concat 'pipe:'
-    ffmpeg.stdout.pipe fs.createWriteStream dest, flags: 'a'
-    ffmpeg.stdout.on 'data', (data) -> size += data.length
+    ffmpeg.stdout.pipe fs.createWriteStream dest, flags: 'w'
     ffmpeg.on 'exit', (code, signal) ->
       return cb msg: 'File could not be added', file: src, retcode: code, signal: signal if code
-      duration = size / SAMPLE_RATE / NUM_CHANNELS / 2
-      winston.info 'File added OK', file: src, duration: duration
+      cb null, dest
+
+# Append s16le formatted source file to the destination file.
+appendFile = (name, src, dest, cb) ->
+  size = 0
+  reader = fs.createReadStream src
+  writer = fs.createWriteStream dest, flags: 'a'
+  reader.on 'data', (data) -> size += data.length
+  util.pump reader, writer, ->
+    duration = size / SAMPLE_RATE / NUM_CHANNELS / 2
+    winston.info 'File added OK', file: src, duration: duration
       
-      name = path.basename(src).replace /\..+$/, ''
-      json.spritemap[name] = start: offsetCursor, end: offsetCursor + duration, loop: name == argv.autoplay
-      offsetCursor += duration
-      appendSilence Math.ceil(duration) - duration + 1, dest, cb
+    json.spritemap[name] = start: offsetCursor, end: offsetCursor + duration, loop: name == argv.autoplay
+    offsetCursor += duration
+    appendSilence Math.ceil(duration) - duration + 1, dest, cb
 
 appendSilence = (duration, dest, cb) ->
   buffer = new Buffer Math.round SAMPLE_RATE * 2 * NUM_CHANNELS * duration
@@ -74,6 +82,9 @@ exportFile = (src, dest, ext, opt, cb) ->
   outfile = dest + '.' + ext
   ffmpeg = spawn 'ffmpeg', ['-y', '-ac', NUM_CHANNELS, '-f', 's16le', '-i', src].concat(opt).concat outfile
   ffmpeg.on 'exit', (code, signal) ->
+    if code
+      setTimeout (->), 20000
+      return
     return cb msg: 'Error exporting file', format: ext, retcode: code, signal: signal if code
     if ext == 'aiff'
       exportFileCaf outfile, dest + '.caf', (err) ->
@@ -93,24 +104,29 @@ exportFileCaf = (src, dest, cb) ->
     winston.info 'Exported caf OK', file: dest
     cb()
 
-processFiles = ->  
+processFiles = ->
+  formats = 
+    aiff: []
+    ac3: '-acodec ac3'.split ' '
+    mp3: '-ab 128 -f mp3'.split ' '
+    m4a: []
+    ogg: '-acodec libvorbis -f ogg'.split ' '
+  
+  rawparts = argv.rawparts.split ','
+  
   async.forEachSeries files, (file, cb) ->
-    appendFile file, tempFile, cb
+    makeRawAudioFile file, (err, tmp) ->
+      return winston.error 'Error processing file', err if err
+      name = path.basename(file).replace /\..+$/, ''
+      appendFile name, tmp, tempFile, (err) ->
+        fs.unlinkSync tmp
+        cb()
   , (err) ->
-    return winston.error 'Error processing file', err if err
-
-    formats = [
-      'aiff'
-      'ac3 -acodec ac3'
-      'mp3 -ab 128 -f mp3'
-      'm4a'
-      'ogg -acodec libvorbis -f ogg'
-    ]
-
-    async.forEachSeries formats, (format, cb) ->
-      [ext, opt...] = format.split ' '
+    return winston.error 'Error adding file', err if err
+    
+    async.forEachSeries Object.keys(formats), (ext, cb) ->
       winston.debug 'Start export', format: ext
-      exportFile tempFile, argv.output, ext, opt, cb
+      exportFile tempFile, argv.output, ext, formats[ext], cb
     , (err) ->
       return winston.error 'Error exporting file', err if err
 
