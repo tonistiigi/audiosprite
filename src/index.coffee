@@ -43,6 +43,11 @@ spawn = (name, opt) ->
   winston.debug 'Spawn', cmd: name + ' ' + opt.join ' '
   child_process.spawn name, opt
 
+pad = (num, size) ->
+  str = num.toString()
+  str = "0" + str while str.length < size
+  str
+
 makeRawAudioFile = (src, cb) ->
   winston.debug 'Start processing', file: src
   dest = mktemp 'audiosprite'
@@ -78,22 +83,19 @@ appendSilence = (duration, dest, cb) ->
     offsetCursor += duration
     cb()
   
-exportFile = (src, dest, ext, opt, cb) ->
+exportFile = (src, dest, ext, opt, store, cb) ->
   outfile = dest + '.' + ext
   ffmpeg = spawn 'ffmpeg', ['-y', '-ac', NUM_CHANNELS, '-f', 's16le', '-i', src].concat(opt).concat outfile
   ffmpeg.on 'exit', (code, signal) ->
-    if code
-      setTimeout (->), 20000
-      return
     return cb msg: 'Error exporting file', format: ext, retcode: code, signal: signal if code
     if ext == 'aiff'
       exportFileCaf outfile, dest + '.caf', (err) ->
-        json.resources.push dest + '.caf'
+        json.resources.push dest + '.caf' if store
         fs.unlinkSync outfile # Aiff itself is not needed.
         cb err
     else
       winston.info "Exported #{ext} OK", file: outfile
-      json.resources.push outfile
+      json.resources.push outfile if store
       cb()
 
 exportFileCaf = (src, dest, cb) ->
@@ -112,21 +114,32 @@ processFiles = ->
     m4a: []
     ogg: '-acodec libvorbis -f ogg'.split ' '
   
-  rawparts = argv.rawparts.split ','
+  rawparts = if argv.rawparts.length then argv.rawparts.split ',' else null
   
+  i = 0
   async.forEachSeries files, (file, cb) ->
+    i++
     makeRawAudioFile file, (err, tmp) ->
       return winston.error 'Error processing file', err if err
       name = path.basename(file).replace /\..+$/, ''
-      appendFile name, tmp, tempFile, (err) ->
+      cb3 = ->
         fs.unlinkSync tmp
         cb()
+      appendFile name, tmp, tempFile, (err) ->
+        if rawparts?.length
+          async.forEachSeries rawparts, (ext, cb2) ->
+            winston.debug 'Start export slice', name: name, format: ext, i: i
+            exportFile tmp, argv.output + '_' + pad(i, 3), ext, formats[ext], false, cb2
+          , cb3
+        else
+          cb3()
+        
   , (err) ->
     return winston.error 'Error adding file', err if err
     
     async.forEachSeries Object.keys(formats), (ext, cb) ->
       winston.debug 'Start export', format: ext
-      exportFile tempFile, argv.output, ext, formats[ext], cb
+      exportFile tempFile, argv.output, ext, formats[ext], true, cb
     , (err) ->
       return winston.error 'Error exporting file', err if err
 
