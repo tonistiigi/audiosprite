@@ -1,6 +1,7 @@
 fs = require 'fs'
 path = require 'path'
 child_process = require 'child_process'
+os = require 'os'
 util = require 'util'
 async = require 'async'
 {_} = require 'underscore'
@@ -35,7 +36,7 @@ if argv.help || !files.length
 
 # Get temporary filename
 mktemp = (prefix) ->
-  tmpdir = process.env.TMPDIR || '.'
+  tmpdir = os.tmpDir() || '.'
   path.join tmpdir, prefix + '.' + ~~(Math.random() * 1e6)
 
 # Wrapper for native spawn with debugging
