@@ -1,6 +1,6 @@
 ### What?
 
-This is a `ffmpeg` wrapper that will take in **multiple audio files** and combine them **into a single file**. Silent gaps will be put between the parts so that every new part starts from full second and there is at least 1 second pause between every part. The final file will be exported in `mp3`, `ogg`, `ac3`, `m4a` and `caf`(IMA-ADPCM) to support as many devices as possible. This tool will also generate a `JSON` file that is compatible with [zynga/jukebox](https://github.com/zynga/jukebox) framework.
+This is a `ffmpeg` wrapper that will take in **multiple audio files** and combines them **into a single file**. Silent gaps will be put between the parts so that every new part starts from full second and there is at least 1 second pause between every part. The final file will be exported in `mp3`, `ogg`, `ac3`, `m4a` and `caf`(IMA-ADPCM) to support as many devices as possible. This tool will also generate a `JSON` file that is compatible with [zynga/jukebox](https://github.com/zynga/jukebox) framework.
 
 ### Why?
 
