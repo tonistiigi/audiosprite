@@ -91,16 +91,16 @@ exportFile = (src, dest, ext, opt, store, cb) ->
     return cb msg: 'Error exporting file', format: ext, retcode: code, signal: signal if code
     if ext == 'aiff'
       exportFileCaf outfile, dest + '.caf', (err) ->
-        json.resources.push dest + '.caf' if store
+        json.resources.push dest + '.caf' if !err && store
         fs.unlinkSync outfile # Aiff itself is not needed.
-        cb err
+        cb()
     else
       winston.info "Exported #{ext} OK", file: outfile
       json.resources.push outfile if store
       cb()
 
 exportFileCaf = (src, dest, cb) ->
-  return unless process.platform == 'darwin'
+  return cb(true) unless process.platform == 'darwin'
   afconvert = spawn 'afconvert', ['-f', 'caff', '-d', 'ima4', src, dest]
   afconvert.on 'exit', (code, signal) ->
     return cb msg: 'Error exporting file', format: 'caf', retcode: code, signal: signal if code
