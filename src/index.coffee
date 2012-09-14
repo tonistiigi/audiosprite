@@ -20,7 +20,7 @@ argv = optimist.argv
 
 winston.setLevels winston.config.syslog.levels
 winston.remove winston.transports.Console
-winston.add winston.transports.Console, colorize: true, level: argv.log, handleExceptions: true
+winston.add winston.transports.Console, colorize: true, level: argv.log, handleExceptions: false
 
 winston.debug 'Parsed arguments', argv
 
@@ -121,7 +121,8 @@ processFiles = ->
   async.forEachSeries files, (file, cb) ->
     i++
     makeRawAudioFile file, (err, tmp) ->
-      return winston.error 'Error processing file', err if err
+      return cb err if err
+
       name = path.basename(file).replace /\..+$/, ''
       cb3 = ->
         fs.unlinkSync tmp
@@ -136,13 +137,17 @@ processFiles = ->
           cb3()
 
   , (err) ->
-    return winston.error 'Error adding file', err if err
+    if err
+      winston.error 'Error adding file', err
+      process.exit(1)
 
     async.forEachSeries Object.keys(formats), (ext, cb) ->
       winston.debug 'Start export', format: ext
       exportFile tempFile, argv.output, ext, formats[ext], true, cb
     , (err) ->
-      return winston.error 'Error exporting file', err if err
+      if err
+        winston.error 'Error exporting file', err
+        process.exit(1)
 
       json.autoplay = argv.autoplay if argv.autoplay
 
@@ -158,9 +163,14 @@ tempFile = mktemp 'audiosprite'
 winston.debug 'Created temporary file', file: tempFile
 json = resources: [], spritemap: {}
 
-if argv.silence
-  json.spritemap.silence = start: 0, end: argv.silence, loop: true
-  json.autoplay = 'silence' unless argv.autoplay
-  appendSilence argv.silence + 1, tempFile, processFiles
-else
-  processFiles()
+ffmpeg = spawn('ffmpeg', ['-version'])
+ffmpeg.on 'exit', (code) ->
+  if code
+    winston.error 'ffmpeg was not found on your path'
+    process.exit(1)
+  if argv.silence
+    json.spritemap.silence = start: 0, end: argv.silence, loop: true
+    json.autoplay = 'silence' unless argv.autoplay
+    appendSilence argv.silence + 1, tempFile, processFiles
+  else
+    processFiles()
