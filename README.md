@@ -12,20 +12,30 @@ iOS, Windows Phone and some Android phones have very limited HTML5 audio support
 npm install -g audiosprite
 ```
 
+#### Hints for Windows users
+
+- You need to install [Node.js](https://www.nodejs.org/)
+- Use [Git Bash](http://git-scm.com/download/win) instead of Command Line or Powershell
+- Download [ffmpeg](http://ffmpeg.zeranoe.com/builds/) and include it in your path `export PATH=$PATH:path/to/ffmpeg/bin`
+- IMA-ADPCM(the fastest iPhone format) will only be generated if you are using OSX.
+
 ###Usage
 
 ```
 > audiosprite --help
 info: Usage: audiosprite [options] file1.mp3 file2.mp3 *.wav
 info: Options:
-  --output, -o    Name for the output file.                             [default: "output"]
-  --log, -l       Log level (debug, info, notice, warning, error).      [default: "info"]
-  --autoplay, -a  Autoplay sprite name                                  [default: null]
-  --silence, -s   Add special "silence" track with specified duration.  [default: 0]
-  --help, -h      Show this help message.
+  --output, -o      Name for the output file.                                    [default: "output"]
+  --log, -l         Log level (debug, info, notice, warning, error).             [default: "info"]
+  --autoplay, -a    Autoplay sprite name                                         [default: null]
+  --silence, -s     Add special "silence" track with specified duration.         [default: 0]
+  --samplerate, -r  Sample rate.                                                 [default: 44100]
+  --channels, -c    Number of channels (1=mono, 2=stereo).                       [default: 1]
+  --rawparts, -p    Include raw slices(for Web Audio API) in specified formats.  [default: ""]
+  --help, -h        Show this help message.
 
 
-> audiosprite --autoplay bg_loop --output mygameaudio bg_loop.wav *.mp3 
+> audiosprite --autoplay bg_loop --output mygameaudio bg_loop.wav *.mp3
 info: File added OK file=bg_loop.wav
 info: 1.25s silence gap added OK
 info: File added OK file=click.mp3
@@ -103,4 +113,6 @@ var audio = new lime.audio.AudioMap(lime.ASSETS.mygameaudio.json);
 ...
 audio.play('click');
 ```
+
+*Don't forget to use the `--rawparts=mp3` option to benefit from the LimeJS feature to automatically switch to Web Audio API when it's supported by the client.*
 
