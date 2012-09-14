@@ -68,7 +68,7 @@ appendFile = (name, src, dest, cb) ->
   util.pump reader, writer, ->
     duration = size / SAMPLE_RATE / NUM_CHANNELS / 2
     winston.info 'File added OK', file: src, duration: duration
-      
+
     json.spritemap[name] = start: offsetCursor, end: offsetCursor + duration, loop: name == argv.autoplay
     offsetCursor += duration
     appendSilence Math.ceil(duration) - duration + 1, dest, cb
@@ -82,7 +82,7 @@ appendSilence = (duration, dest, cb) ->
     winston.info 'Silence gap added', duration: duration
     offsetCursor += duration
     cb()
-  
+
 exportFile = (src, dest, ext, opt, store, cb) ->
   outfile = dest + '.' + ext
   ffmpeg = spawn 'ffmpeg', ['-y', '-ac', NUM_CHANNELS, '-f', 's16le', '-i', src].concat(opt).concat outfile
@@ -107,15 +107,15 @@ exportFileCaf = (src, dest, cb) ->
     cb()
 
 processFiles = ->
-  formats = 
+  formats =
     aiff: []
     ac3: '-acodec ac3'.split ' '
     mp3: '-ab 128 -f mp3'.split ' '
     m4a: []
     ogg: '-acodec libvorbis -f ogg'.split ' '
-  
+
   rawparts = if argv.rawparts.length then argv.rawparts.split ',' else null
-  
+
   i = 0
   async.forEachSeries files, (file, cb) ->
     i++
@@ -133,10 +133,10 @@ processFiles = ->
           , cb3
         else
           cb3()
-        
+
   , (err) ->
     return winston.error 'Error adding file', err if err
-    
+
     async.forEachSeries Object.keys(formats), (ext, cb) ->
       winston.debug 'Start export', format: ext
       exportFile tempFile, argv.output, ext, formats[ext], true, cb
