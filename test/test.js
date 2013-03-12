@@ -3,7 +3,7 @@ var assert = require('assert')
   , path = require('path')
   , spawn = require('child_process').spawn
 
-var AUDIOSPRITE_PATH = path.join(__dirname, '../lib/audiosprite.js')
+var AUDIOSPRITE_PATH = path.join(__dirname, '../')
   , OUTPUT = 'audiosprite-test-out' + ~~(Math.random() * 1e6)
 
 var tmpdir = require('os').tmpDir() || '.'

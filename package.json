@@ -19,9 +19,9 @@
     "type": "git",
     "url": "git://github.com/tonistiigi/audiosprite.git"
   },
-  "main": "./lib/index.js",
+  "main": "./audiosprite.js",
   "bin": {
-    "audiosprite": "./lib/audiosprite.js"
+    "audiosprite": "./audiosprite.js"
   },
   "dependencies": {
     "optimist": "~0.3.4",
