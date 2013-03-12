@@ -239,7 +239,7 @@ function processFiles() {
   var formats = {
     aiff: []
   , ac3: '-acodec ac3'.split(' ')
-  , mp3: '-ab 128 -f mp3'.split(' ')
+  , mp3: ['-ar', SAMPLE_RATE, '-ab', '128k', '-f', 'mp3']
   , m4a: []
   , ogg: '-acodec libvorbis -f ogg'.split(' ')
   }
