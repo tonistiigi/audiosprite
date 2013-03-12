@@ -12,6 +12,11 @@ var optimist = require('optimist')
   , 'default': 'output'
   , describe: 'Name for the output file.'
   })
+  .options('export', {
+    alias: 'e'
+  , 'default': ''
+  , describe: 'Limit exported file types. Comma separated extension list.'
+  })
   .options('log', {
     alias: 'l'
   , 'default': 'info'
@@ -243,6 +248,16 @@ function processFiles() {
   , m4a: []
   , ogg: '-acodec libvorbis -f ogg'.split(' ')
   }
+
+  if (argv.export.length) {
+    formats = argv.export.split(',').reduce(function(memo, val) {
+      if (formats[val]) {
+        memo[val] = formats[val]
+      }
+      return memo
+    }, {})
+  }
+
   var rawparts = argv.rawparts.length ? argv.rawparts.split(',') : null
   var i = 0
   async.forEachSeries(files, function(file, cb) {
