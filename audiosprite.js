@@ -272,7 +272,7 @@ function processFiles() {
         cb()
       }
 
-      var name = path.basename(file).replace(/\..+$/, '')
+      var name = path.basename(file).replace(/\.[a-zA-Z0-9]+$/, '')
       appendFile(name, tmp, tempFile, function(err) {
         if (rawparts != null ? rawparts.length : void 0) {
         async.forEachSeries(rawparts, function(ext, cb) {
