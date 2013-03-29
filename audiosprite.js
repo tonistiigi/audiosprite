@@ -37,6 +37,11 @@ var optimist = require('optimist')
   , 'default': 44100
   , describe: 'Sample rate.'
   })
+  .options('bitrate', {
+    alias: 'b'
+  , 'default': 128
+  , describe: 'The bitrate quality for the exported audio.'
+  })
   .options('channels', {
     alias: 'c'
   , 'default': 1
@@ -66,6 +71,7 @@ winston.debug('Parsed arguments', argv)
 
 var SAMPLE_RATE = parseInt(argv.samplerate, 10)
 var NUM_CHANNELS = parseInt(argv.channels, 10)
+var BIT_RATE = parseInt(argv.bitrate, 10)
 
 var files = _.uniq(argv._)
 
@@ -192,7 +198,7 @@ function appendSilence(duration, dest, cb) {
 
 exportFile = function(src, dest, ext, opt, store, cb) {
   var outfile = dest + '.' + ext
-  spawn('ffmpeg',['-y', '-ac', NUM_CHANNELS, '-f', 's16le', '-i', src]
+  spawn('ffmpeg',['-y', '-ac', NUM_CHANNELS, '-f', 's16le', '-i', src, '-ab', BIT_RATE+'k']
       .concat(opt).concat(outfile))
     .on('exit', function(code, signal) {
       if (code) {
@@ -244,7 +250,7 @@ function processFiles() {
   var formats = {
     aiff: []
   , ac3: '-acodec ac3'.split(' ')
-  , mp3: ['-ar', SAMPLE_RATE, '-ab', '128k', '-f', 'mp3']
+  , mp3: ['-ar', SAMPLE_RATE, '-f', 'mp3']
   , m4a: []
   , ogg: '-acodec libvorbis -f ogg'.split(' ')
   }
