@@ -51,6 +51,11 @@ var optimist = require('optimist')
     alias: 'h'
   , describe: 'Show this help message.'
   })
+  .options('bitrate', {
+	alias: 'b'
+	, 'default':'128'
+	, describe: 'The bitrate of the output file. e.g. 128 for 128 kbs. Note - works for m4a, ogg, and mp3 files.'
+  })
 
 var argv = optimist.argv
 
@@ -66,6 +71,7 @@ winston.debug('Parsed arguments', argv)
 
 var SAMPLE_RATE = parseInt(argv.samplerate, 10)
 var NUM_CHANNELS = parseInt(argv.channels, 10)
+var BITRATE = parseInt(argv.bitrate, 10)
 
 var files = _.uniq(argv._)
 
@@ -243,10 +249,10 @@ function exportFileCaf(src, dest, cb) {
 function processFiles() {
   var formats = {
     aiff: []
-  , ac3: '-acodec ac3'.split(' ')
-  , mp3: ['-ar', SAMPLE_RATE, '-ab', '128k', '-f', 'mp3']
-  , m4a: []
-  , ogg: '-acodec libvorbis -f ogg'.split(' ')
+  , ac3: ['-acodec', 'ac3']
+  , mp3: ['-ar', SAMPLE_RATE, '-ab', BITRATE+'k', '-f', 'mp3']
+  , m4a: ['-ab', BITRATE+'k']
+  , ogg: ['-acodec', 'libvorbis', '-f', 'ogg', '-ab', BITRATE+'k']
   }
 
   if (argv.export.length) {

@@ -35,6 +35,7 @@ info: Options:
   --samplerate, -r  Sample rate.                                                 [default: 44100]
   --channels, -c    Number of channels (1=mono, 2=stereo).                       [default: 1]
   --rawparts, -p    Include raw slices(for Web Audio API) in specified formats.  [default: ""]
+  --bitrate, -b     The bitrate quality for the exported audio.                  [default: 128]
   --help, -h        Show this help message.
 
 
