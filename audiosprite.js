@@ -10,7 +10,7 @@ var optimist = require('optimist')
   .options('output', {
     alias: 'o'
   , 'default': 'output'
-  , describe: 'Name for the output file.'
+  , describe: 'Name for the output files.'
   })
   .options('path', {
     alias: 'u'
@@ -21,6 +21,11 @@ var optimist = require('optimist')
     alias: 'e'
   , 'default': ''
   , describe: 'Limit exported file types. Comma separated extension list.'
+  })
+  .options('format', {
+    alias: 'f'
+  , 'default': 'default'
+  , describe: 'Format of the output JSON file (default, howler).'
   })
   .options('log', {
     alias: 'l'
@@ -310,9 +315,28 @@ function processFiles() {
       json.resources = json.resources.map(function(e) {
         return argv.path + e;
       });
-      
+
+      var finalJson = {};
+
+      switch (argv.format) {
+
+        case 'howler':
+          finalJson.urls = [].concat(json.resources);
+          finalJson.sprite = {};
+          for (var sn in json.spritemap) {
+            var spriteInfo = json.spritemap[sn];
+            finalJson.sprite[sn] = [spriteInfo.start * 1000, (spriteInfo.end - spriteInfo.start) * 1000];
+          }
+          break;
+
+        case 'default':
+        default:
+          finalJson = json;
+          break;
+      }
+
       var jsonfile = argv.output + '.json'
-      fs.writeFileSync(jsonfile, JSON.stringify(json, null, 2))
+      fs.writeFileSync(jsonfile, JSON.stringify(finalJson, null, 2))
       winston.info('Exported json OK', { file: jsonfile })
       fs.unlinkSync(tempFile)
       winston.info('All done')
