@@ -28,7 +28,7 @@ npm install -g audiosprite
 info: Usage: audiosprite [options] file1.mp3 file2.mp3 *.wav
 info: Options:
   --output, -o      Name for the output file.                                    [default: "output"]
-  --path, -u        Path to be used in files' URL's on final JSON                 [default: ""]
+  --path, -u        Path to be used in files' URL's on final JSON                [default: ""]
   --export, -e      Limit exported file types. Comma separated extension list.   [default: ""]
   --log, -l         Log level (debug, info, notice, warning, error).             [default: "info"]
   --autoplay, -a    Autoplay sprite name                                         [default: null]
