@@ -188,18 +188,17 @@ function appendFile(name, src, dest, cb) {
     size += data.length
   })
   require('util').pump(reader, writer, function() {
-    var duration = size / SAMPLE_RATE / NUM_CHANNELS / 2
-    winston.info('File added OK', { file: src, duration: duration })
-    var silenceTime = Math.ceil(duration) - duration + GAP_SECONDS
-    var end = Math.max(offsetCursor + MINIMUM_SOUND_LENGTH, offsetCursor + duration)
-    end = Math.min(end, offsetCursor + duration + silenceTime)
+    var originalDuration = size / SAMPLE_RATE / NUM_CHANNELS / 2
+    winston.info('File added OK', { file: src, duration: originalDuration })
+    var extraDuration = Math.max(0, MINIMUM_SOUND_LENGTH - originalDuration)
+    var duration = originalDuration + extraDuration
     json.spritemap[name] = {
       start: offsetCursor
-    , end: end
+    , end: offsetCursor + duration
     , loop: name === argv.autoplay
     }
-    offsetCursor += duration
-    appendSilence(silenceTime, dest, cb)
+    offsetCursor += originalDuration
+    appendSilence(extraDuration + Math.ceil(duration) - duration + GAP_SECONDS, dest, cb)
   })
 }
 
