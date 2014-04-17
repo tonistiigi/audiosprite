@@ -328,26 +328,26 @@ function processFiles() {
       }
 
       json.resources = json.resources.map(function(e) {
-        return argv.path + e;
-      });
+        return argv.path + e
+      })
 
-      var finalJson = {};
+      var finalJson = {}
 
       switch (argv.format) {
 
         case 'howler':
-          finalJson.urls = [].concat(json.resources);
-          finalJson.sprite = {};
+          finalJson.urls = [].concat(json.resources)
+          finalJson.sprite = {}
           for (var sn in json.spritemap) {
-            var spriteInfo = json.spritemap[sn];
-            finalJson.sprite[sn] = [spriteInfo.start * 1000, (spriteInfo.end - spriteInfo.start) * 1000];
+            var spriteInfo = json.spritemap[sn]
+            finalJson.sprite[sn] = [spriteInfo.start * 1000, (spriteInfo.end - spriteInfo.start) * 1000]
           }
-          break;
+          break
 
         case 'default':
         default:
-          finalJson = json;
-          break;
+          finalJson = json
+          break
       }
 
       var jsonfile = argv.output + '.json'
