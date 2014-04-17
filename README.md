@@ -34,6 +34,8 @@ info: Options:
   --log, -l         Log level (debug, info, notice, warning, error).             [default: "info"]
   --autoplay, -a    Autoplay sprite name                                         [default: null]
   --silence, -s     Add special "silence" track with specified duration.         [default: 0]
+  --gap, -g         Silence duration between sounds (seconds).                   [default: 1]
+  --minlength, -m   Minimum sound duration (seconds).                            [default: 0]
   --samplerate, -r  Sample rate.                                                 [default: 44100]
   --channels, -c    Number of channels (1=mono, 2=stereo).                       [default: 1]
   --rawparts, -p    Include raw slices(for Web Audio API) in specified formats.  [default: ""]

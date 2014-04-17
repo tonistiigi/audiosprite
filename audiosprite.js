@@ -42,6 +42,16 @@ var optimist = require('optimist')
   , 'default': 0
   , describe: 'Add special "silence" track with specified duration.'
   })
+  .options('gap', {
+    alias: 'g'
+  , 'default': 1
+  , describe: 'Silence gap between sounds (in seconds).'
+  })
+  .options('minlength', {
+    alias: 'm'
+  , 'default': 0
+  , describe: 'Minimum sound duration (in seconds).'
+  })
   .options('samplerate', {
     alias: 'r'
   , 'default': 44100
@@ -76,6 +86,8 @@ winston.debug('Parsed arguments', argv)
 
 var SAMPLE_RATE = parseInt(argv.samplerate, 10)
 var NUM_CHANNELS = parseInt(argv.channels, 10)
+var GAP_SECONDS = parseFloat(argv.gap)
+var MINIMUM_SOUND_LENGTH = parseFloat(argv.minlength)
 
 var files = _.uniq(argv._)
 
@@ -113,7 +125,7 @@ spawn('ffmpeg', ['-version']).on('exit', function(code) {
     if (!argv.autoplay) {
       json.autoplay = 'silence'
     }
-    appendSilence(argv.silence + 1, tempFile, processFiles)
+    appendSilence(argv.silence + GAP_SECONDS, tempFile, processFiles)
   } else {
     processFiles()
   }
@@ -178,13 +190,16 @@ function appendFile(name, src, dest, cb) {
   require('util').pump(reader, writer, function() {
     var duration = size / SAMPLE_RATE / NUM_CHANNELS / 2
     winston.info('File added OK', { file: src, duration: duration })
+    var silenceTime = Math.ceil(duration) - duration + GAP_SECONDS
+    var end = Math.max(offsetCursor + MINIMUM_SOUND_LENGTH, offsetCursor + duration)
+    end = Math.min(end, offsetCursor + duration + silenceTime)
     json.spritemap[name] = {
       start: offsetCursor
-    , end: offsetCursor + duration
+    , end: end
     , loop: name === argv.autoplay
     }
     offsetCursor += duration
-    appendSilence(Math.ceil(duration) - duration + 1, dest, cb)
+    appendSilence(silenceTime, dest, cb)
   })
 }
 
