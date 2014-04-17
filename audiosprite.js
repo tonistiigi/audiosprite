@@ -19,7 +19,7 @@ var optimist = require('optimist')
   })
   .options('export', {
     alias: 'e'
-  , 'default': ''
+  , 'default': 'ogg,m4a,mp3,ac3'
   , describe: 'Limit exported file types. Comma separated extension list.'
   })
   .options('format', {
@@ -35,7 +35,7 @@ var optimist = require('optimist')
   .options('autoplay', {
     alias: 'a'
   , 'default': null
-  , describe: 'Autoplay sprite name'
+  , describe: 'Autoplay sprite name.'
   })
   .options('silence', {
     alias: 's'
@@ -272,6 +272,8 @@ function processFiles() {
   , mp3: ['-ar', SAMPLE_RATE, '-ab', '128k', '-f', 'mp3']
   , m4a: []
   , ogg: '-acodec libvorbis -f ogg'.split(' ')
+  , mp4: []
+  , wav: []
   }
 
   if (argv.export.length) {
