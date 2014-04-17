@@ -12,6 +12,11 @@ var optimist = require('optimist')
   , 'default': 'output'
   , describe: 'Name for the output file.'
   })
+  .options('path', {
+    alias: 'u'
+  , 'default': ''
+  , describe: 'Path for files to be used on final JSON.'
+  })
   .options('export', {
     alias: 'e'
   , 'default': ''
@@ -301,6 +306,11 @@ function processFiles() {
       if (argv.autoplay) {
         json.autoplay = argv.autoplay
       }
+
+      json.resources = json.resources.map(function(e) {
+        return argv.path + e;
+      });
+      
       var jsonfile = argv.output + '.json'
       fs.writeFileSync(jsonfile, JSON.stringify(json, null, 2))
       winston.info('Exported json OK', { file: jsonfile })
