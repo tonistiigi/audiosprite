@@ -10,12 +10,22 @@ var optimist = require('optimist')
   .options('output', {
     alias: 'o'
   , 'default': 'output'
-  , describe: 'Name for the output file.'
+  , describe: 'Name for the output files.'
+  })
+  .options('path', {
+    alias: 'u'
+  , 'default': ''
+  , describe: 'Path for files to be used on final JSON.'
   })
   .options('export', {
     alias: 'e'
-  , 'default': ''
+  , 'default': 'ogg,m4a,mp3,ac3'
   , describe: 'Limit exported file types. Comma separated extension list.'
+  })
+  .options('format', {
+    alias: 'f'
+  , 'default': 'default'
+  , describe: 'Format of the output JSON file (default, howler).'
   })
   .options('log', {
     alias: 'l'
@@ -25,12 +35,22 @@ var optimist = require('optimist')
   .options('autoplay', {
     alias: 'a'
   , 'default': null
-  , describe: 'Autoplay sprite name'
+  , describe: 'Autoplay sprite name.'
   })
   .options('silence', {
     alias: 's'
   , 'default': 0
   , describe: 'Add special "silence" track with specified duration.'
+  })
+  .options('gap', {
+    alias: 'g'
+  , 'default': 1
+  , describe: 'Silence gap between sounds (in seconds).'
+  })
+  .options('minlength', {
+    alias: 'm'
+  , 'default': 0
+  , describe: 'Minimum sound duration (in seconds).'
   })
   .options('samplerate', {
     alias: 'r'
@@ -66,6 +86,8 @@ winston.debug('Parsed arguments', argv)
 
 var SAMPLE_RATE = parseInt(argv.samplerate, 10)
 var NUM_CHANNELS = parseInt(argv.channels, 10)
+var GAP_SECONDS = parseFloat(argv.gap)
+var MINIMUM_SOUND_LENGTH = parseFloat(argv.minlength)
 
 var files = _.uniq(argv._)
 
@@ -103,7 +125,7 @@ spawn('ffmpeg', ['-version']).on('exit', function(code) {
     if (!argv.autoplay) {
       json.autoplay = 'silence'
     }
-    appendSilence(argv.silence + 1, tempFile, processFiles)
+    appendSilence(argv.silence + GAP_SECONDS, tempFile, processFiles)
   } else {
     processFiles()
   }
@@ -166,15 +188,17 @@ function appendFile(name, src, dest, cb) {
     size += data.length
   })
   require('util').pump(reader, writer, function() {
-    var duration = size / SAMPLE_RATE / NUM_CHANNELS / 2
-    winston.info('File added OK', { file: src, duration: duration })
+    var originalDuration = size / SAMPLE_RATE / NUM_CHANNELS / 2
+    winston.info('File added OK', { file: src, duration: originalDuration })
+    var extraDuration = Math.max(0, MINIMUM_SOUND_LENGTH - originalDuration)
+    var duration = originalDuration + extraDuration
     json.spritemap[name] = {
       start: offsetCursor
     , end: offsetCursor + duration
     , loop: name === argv.autoplay
     }
-    offsetCursor += duration
-    appendSilence(Math.ceil(duration) - duration + 1, dest, cb)
+    offsetCursor += originalDuration
+    appendSilence(extraDuration + Math.ceil(duration) - duration + GAP_SECONDS, dest, cb)
   })
 }
 
@@ -247,6 +271,8 @@ function processFiles() {
   , mp3: ['-ar', SAMPLE_RATE, '-ab', '128k', '-f', 'mp3']
   , m4a: []
   , ogg: '-acodec libvorbis -f ogg'.split(' ')
+  , mp4: []
+  , wav: []
   }
 
   if (argv.export.length) {
@@ -301,8 +327,32 @@ function processFiles() {
       if (argv.autoplay) {
         json.autoplay = argv.autoplay
       }
+
+      json.resources = json.resources.map(function(e) {
+        return argv.path + e
+      })
+
+      var finalJson = {}
+
+      switch (argv.format) {
+
+        case 'howler':
+          finalJson.urls = [].concat(json.resources)
+          finalJson.sprite = {}
+          for (var sn in json.spritemap) {
+            var spriteInfo = json.spritemap[sn]
+            finalJson.sprite[sn] = [spriteInfo.start * 1000, (spriteInfo.end - spriteInfo.start) * 1000]
+          }
+          break
+
+        case 'default':
+        default:
+          finalJson = json
+          break
+      }
+
       var jsonfile = argv.output + '.json'
-      fs.writeFileSync(jsonfile, JSON.stringify(json, null, 2))
+      fs.writeFileSync(jsonfile, JSON.stringify(finalJson, null, 2))
       winston.info('Exported json OK', { file: jsonfile })
       fs.unlinkSync(tempFile)
       winston.info('All done')
