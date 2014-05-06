@@ -95,9 +95,10 @@ for (var i = 0; i < files.length; i++) {
   if (files[i].indexOf('*.') > -1) {
     var fileName = files[i],
       dir = fileName.substring(0, fileName.lastIndexOf('\\') + 1),
+      ext = path.extname(fileName),
       dirFiles = fs.readdirSync(dir + '.');
 
-    for (var dF in dirFiles) {
+    for (var dF in _.filter(dirFiles, function(s) { return s.indexOf(ext) > -1; })) {
       files.push(dir + dirFiles[dF]);
     }
 
