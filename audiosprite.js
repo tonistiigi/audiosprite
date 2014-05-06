@@ -89,8 +89,6 @@ var GAP_SECONDS = parseFloat(argv.gap)
 var MINIMUM_SOUND_LENGTH = parseFloat(argv.minlength)
 
 var files = _.uniq(argv._)
-console.log(files)
-console.log('----------------------------------------------------------')
 for (var i = 0; i < files.length; i++) {
   if (files[i].indexOf('*.') > -1) {
     var fileName = files[i]
@@ -107,7 +105,6 @@ for (var i = 0; i < files.length; i++) {
   }
 }
 
-console.log(files)
 
 if (argv.help || !files.length) {
   if (!argv.help) {
