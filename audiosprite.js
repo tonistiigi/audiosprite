@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var path = require('path');
-var async = require('async');
-var _ = require('underscore')._;
-var winston = require('winston');
+var fs = require('fs')
+var path = require('path')
+var async = require('async')
+var _ = require('underscore')._
+var winston = require('winston')
 
 var optimist = require('optimist')
   .options('output', {
@@ -70,39 +70,38 @@ var optimist = require('optimist')
   .options('help', {
     alias: 'h'
   , describe: 'Show this help message.'
-  });
+  })
 
-var argv = optimist.argv;
+var argv = optimist.argv
 
-winston.setLevels(winston.config.syslog.levels);
-winston.remove(winston.transports.Console);
+winston.setLevels(winston.config.syslog.levels)
+winston.remove(winston.transports.Console)
 winston.add(winston.transports.Console, {
   colorize: true
 , level: argv.log
 , handleExceptions: false
-});
-winston.debug('Parsed arguments', argv);
+})
+winston.debug('Parsed arguments', argv)
 
+var SAMPLE_RATE = parseInt(argv.samplerate, 10)
+var NUM_CHANNELS = parseInt(argv.channels, 10)
+var GAP_SECONDS = parseFloat(argv.gap)
+var MINIMUM_SOUND_LENGTH = parseFloat(argv.minlength)
 
-var SAMPLE_RATE = parseInt(argv.samplerate, 10);
-var NUM_CHANNELS = parseInt(argv.channels, 10);
-var GAP_SECONDS = parseFloat(argv.gap);
-var MINIMUM_SOUND_LENGTH = parseFloat(argv.minlength);
-
-var files = _.uniq(argv._);
+var files = _.uniq(argv._)
 
 for (var i = 0; i < files.length; i++) {
   if (files[i].indexOf('*.') > -1) {
     var fileName = files[i],
       dir = fileName.substring(0, fileName.lastIndexOf('\\') + 1),
       ext = path.extname(fileName),
-      dirFiles = fs.readdirSync(dir + '.');
+      dirFiles = fs.readdirSync(dir + '.')
 
     for (var dF in _.filter(dirFiles, function(s) { return s.indexOf(ext) > -1; })) {
-      files.push(dir + dirFiles[dF]);
+      files.push(dir + dirFiles[dF])
     }
 
-    files.splice(i--, 1);
+    files.splice(i--, 1)
   }
 }
 
@@ -110,25 +109,25 @@ if (argv.help || !files.length) {
   if (!argv.help) {
     winston.error('No input files specified.')
   }
-  winston.info('Usage: audiosprite [options] file1.mp3 file2.mp3 *.wav');
-  winston.info(optimist.help());
-  process.exit(1);
+  winston.info('Usage: audiosprite [options] file1.mp3 file2.mp3 *.wav')
+  winston.info(optimist.help())
+  process.exit(1)
 }
 
-var offsetCursor = 0;
-var wavArgs = ['-ar', SAMPLE_RATE, '-ac', NUM_CHANNELS, '-f', 's16le'];
-var tempFile = mktemp('audiosprite');
+var offsetCursor = 0
+var wavArgs = ['-ar', SAMPLE_RATE, '-ac', NUM_CHANNELS, '-f', 's16le']
+var tempFile = mktemp('audiosprite')
 
-winston.debug('Created temporary file', { file: tempFile });
+winston.debug('Created temporary file', { file: tempFile })
 
 var json = {
   resources: []
 , spritemap: {}
-};
+}
 
 spawn('ffmpeg', ['-version']).on('exit', function(code) {
   if (code) {
-    winston.error('ffmpeg was not found on your path');
+    winston.error('ffmpeg was not found on your path')
     process.exit(1)
   }
   if (argv.silence) {
@@ -136,7 +135,7 @@ spawn('ffmpeg', ['-version']).on('exit', function(code) {
       start: 0
     , end: argv.silence
     , loop: true
-    };
+    }
     if (!argv.autoplay) {
       json.autoplay = 'silence'
     }
@@ -144,21 +143,21 @@ spawn('ffmpeg', ['-version']).on('exit', function(code) {
   } else {
     processFiles()
   }
-});
+})
 
 
 function mktemp(prefix) {
-  var tmpdir = require('os').tmpDir() || '.';
+  var tmpdir = require('os').tmpDir() || '.'
   return path.join(tmpdir, prefix + '.' + Math.random().toString().substr(2))
 }
 
 function spawn(name, opt) {
-  winston.debug('Spawn', { cmd: [name].concat(opt).join(' ') });
+  winston.debug('Spawn', { cmd: [name].concat(opt).join(' ') })
   return require('child_process').spawn(name, opt)
 }
 
 function pad(num, size) {
-  var str = num.toString();
+  var str = num.toString()
   while (str.length < size) {
     str = '0' + str
   }
@@ -166,15 +165,15 @@ function pad(num, size) {
 }
 
 function makeRawAudioFile(src, cb) {
-  var dest = mktemp('audiosprite');
+  var dest = mktemp('audiosprite')
 
-  winston.debug('Start processing', { file: src});
+  winston.debug('Start processing', { file: src})
 
   fs.exists(src, function(exists) {
     if (exists) {
       var ffmpeg = spawn('ffmpeg', ['-i', path.resolve(src)]
-        .concat(wavArgs).concat('pipe:'));
-      ffmpeg.stdout.pipe(fs.createWriteStream(dest, {flags: 'w'}));
+        .concat(wavArgs).concat('pipe:'))
+      ffmpeg.stdout.pipe(fs.createWriteStream(dest, {flags: 'w'}))
       ffmpeg.on('exit', function(code, signal) {
         if (code) {
           return cb({
@@ -194,43 +193,43 @@ function makeRawAudioFile(src, cb) {
 }
 
 function appendFile(name, src, dest, cb) {
-  var size = 0;
-  var reader = fs.createReadStream(src);
+  var size = 0
+  var reader = fs.createReadStream(src)
   var writer = fs.createWriteStream(dest, {
     flags: 'a'
-  });
+  })
   reader.on('data', function(data) {
     size += data.length
-  });
+  })
   require('util').pump(reader, writer, function() {
-    var originalDuration = size / SAMPLE_RATE / NUM_CHANNELS / 2;
-    winston.info('File added OK', { file: src, duration: originalDuration });
-    var extraDuration = Math.max(0, MINIMUM_SOUND_LENGTH - originalDuration);
-    var duration = originalDuration + extraDuration;
+    var originalDuration = size / SAMPLE_RATE / NUM_CHANNELS / 2
+    winston.info('File added OK', { file: src, duration: originalDuration })
+    var extraDuration = Math.max(0, MINIMUM_SOUND_LENGTH - originalDuration)
+    var duration = originalDuration + extraDuration
     json.spritemap[name] = {
       start: offsetCursor
     , end: offsetCursor + duration
     , loop: name === argv.autoplay
-    };
-    offsetCursor += originalDuration;
+    }
+    offsetCursor += originalDuration
     appendSilence(extraDuration + Math.ceil(duration) - duration + GAP_SECONDS, dest, cb)
   })
 }
 
 function appendSilence(duration, dest, cb) {
-  var buffer = new Buffer(Math.round(SAMPLE_RATE * 2 * NUM_CHANNELS * duration));
-  buffer.fill(null);
-  var writeStream = fs.createWriteStream(dest, { flags: 'a' });
-  writeStream.end(buffer);
+  var buffer = new Buffer(Math.round(SAMPLE_RATE * 2 * NUM_CHANNELS * duration))
+  buffer.fill(null)
+  var writeStream = fs.createWriteStream(dest, { flags: 'a' })
+  writeStream.end(buffer)
   writeStream.on('close', function() {
-    winston.info('Silence gap added', { duration: duration });
-    offsetCursor += duration;
+    winston.info('Silence gap added', { duration: duration })
+    offsetCursor += duration
     cb()
   })
 }
 
 exportFile = function(src, dest, ext, opt, store, cb) {
-  var outfile = dest + '.' + ext;
+  var outfile = dest + '.' + ext
   spawn('ffmpeg',['-y', '-ac', NUM_CHANNELS, '-f', 's16le', '-i', src]
       .concat(opt).concat(outfile))
     .on('exit', function(code, signal) {
@@ -247,18 +246,18 @@ exportFile = function(src, dest, ext, opt, store, cb) {
           if (!err && store) {
             json.resources.push(dest + '.caf')
           }
-          fs.unlinkSync(outfile);
+          fs.unlinkSync(outfile)
           cb()
         })
       } else {
-        winston.info("Exported " + ext + " OK", { file: outfile });
+        winston.info("Exported " + ext + " OK", { file: outfile })
         if (store) {
           json.resources.push(outfile)
         }
         cb()
       }
     })
-};
+}
 
 function exportFileCaf(src, dest, cb) {
   if (process.platform !== 'darwin') {
@@ -288,7 +287,7 @@ function processFiles() {
   , ogg: '-acodec libvorbis -f ogg'.split(' ')
   , mp4: []
   , wav: []
-  };
+  }
 
   if (argv.export.length) {
     formats = argv.export.split(',').reduce(function(memo, val) {
@@ -299,25 +298,25 @@ function processFiles() {
     }, {})
   }
 
-  var rawparts = argv.rawparts.length ? argv.rawparts.split(',') : null;
-  var i = 0;
+  var rawparts = argv.rawparts.length ? argv.rawparts.split(',') : null
+  var i = 0
   async.forEachSeries(files, function(file, cb) {
-    i++;
+    i++
     makeRawAudioFile(file, function(err, tmp) {
       if (err) {
         return cb(err)
       }
 
       function tempProcessed() {
-        fs.unlinkSync(tmp);
+        fs.unlinkSync(tmp)
         cb()
       }
 
-      var name = path.basename(file).replace(/\.[a-zA-Z0-9]+$/, '');
+      var name = path.basename(file).replace(/\.[a-zA-Z0-9]+$/, '')
       appendFile(name, tmp, tempFile, function(err) {
         if (rawparts != null ? rawparts.length : void 0) {
         async.forEachSeries(rawparts, function(ext, cb) {
-          winston.debug('Start export slice', { name: name, format: ext, i: i });
+          winston.debug('Start export slice', { name: name, format: ext, i: i })
           exportFile(tmp, argv.output + '_' + pad(i, 3), ext, formats[ext]
             , false, cb)
           }, tempProcessed)
@@ -328,15 +327,15 @@ function processFiles() {
     })
   }, function(err) {
     if (err) {
-      winston.error('Error adding file', err);
+      winston.error('Error adding file', err)
       process.exit(1)
     }
     async.forEachSeries(Object.keys(formats), function(ext, cb) {
-      winston.debug('Start export', { format: ext });
+      winston.debug('Start export', { format: ext })
       exportFile(tempFile, argv.output, ext, formats[ext], true, cb)
     }, function(err) {
       if (err) {
-        winston.error('Error exporting file', err);
+        winston.error('Error exporting file', err)
         process.exit(1)
       }
       if (argv.autoplay) {
@@ -345,31 +344,31 @@ function processFiles() {
 
       json.resources = json.resources.map(function(e) {
         return argv.path + e
-      });
+      })
 
-      var finalJson = {};
+      var finalJson = {}
 
       switch (argv.format) {
 
         case 'howler':
-          finalJson.urls = [].concat(json.resources);
-          finalJson.sprite = {};
+          finalJson.urls = [].concat(json.resources)
+          finalJson.sprite = {}
           for (var sn in json.spritemap) {
-            var spriteInfo = json.spritemap[sn];
+            var spriteInfo = json.spritemap[sn]
             finalJson.sprite[sn] = [spriteInfo.start * 1000, (spriteInfo.end - spriteInfo.start) * 1000]
           }
-          break;
+          break
 
         case 'default':
         default:
-          finalJson = json;
+          finalJson = json
           break
       }
 
-      var jsonfile = argv.output + '.json';
-      fs.writeFileSync(jsonfile, JSON.stringify(finalJson, null, 2));
-      winston.info('Exported json OK', { file: jsonfile });
-      fs.unlinkSync(tempFile);
+      var jsonfile = argv.output + '.json'
+      fs.writeFileSync(jsonfile, JSON.stringify(finalJson, null, 2))
+      winston.info('Exported json OK', { file: jsonfile })
+      fs.unlinkSync(tempFile)
       winston.info('All done')
     })
   })
