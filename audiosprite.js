@@ -89,21 +89,25 @@ var GAP_SECONDS = parseFloat(argv.gap)
 var MINIMUM_SOUND_LENGTH = parseFloat(argv.minlength)
 
 var files = _.uniq(argv._)
-
+console.log(files)
+console.log('----------------------------------------------------------')
 for (var i = 0; i < files.length; i++) {
   if (files[i].indexOf('*.') > -1) {
-    var fileName = files[i],
-      dir = fileName.substring(0, fileName.lastIndexOf('\\') + 1),
-      ext = path.extname(fileName),
-      dirFiles = fs.readdirSync(dir + '.')
+    var fileName = files[i]
+    var dir = fileName.substring(0, fileName.lastIndexOf('\\') + 1)
+    var ext = path.extname(fileName)
+    var dirFiles = fs.readdirSync(dir + '.')
+	var filtered = _.filter(dirFiles, function(s) { return s.indexOf(ext) > -1; })
 
-    for (var dF in _.filter(dirFiles, function(s) { return s.indexOf(ext) > -1; })) {
-      files.push(dir + dirFiles[dF])
+    for (var dF in filtered) {
+      files.push(dir + filtered[dF])
     }
 
     files.splice(i--, 1)
   }
 }
+
+console.log(files)
 
 if (argv.help || !files.length) {
   if (!argv.help) {
