@@ -8,7 +8,7 @@
     "ffmpeg"
   ],
   "author": "Tõnis Tiigi <tonistiigi@gmail.com>",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "licenses": [
     {
       "type": "MIT",
