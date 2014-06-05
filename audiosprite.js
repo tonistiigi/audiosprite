@@ -24,8 +24,8 @@ var optimist = require('optimist')
   })
   .options('format', {
     alias: 'f'
-  , 'default': 'default'
-  , describe: 'Format of the output JSON file (default, howler).'
+  , 'default': 'jukebox'
+  , describe: 'Format of the output JSON file (jukebox, howler).'
   })
   .options('log', {
     alias: 'l'
@@ -345,7 +345,7 @@ function processFiles() {
           }
           break
 
-        case 'default':
+        case 'default': // legacy support
         default:
           finalJson = json
           break
