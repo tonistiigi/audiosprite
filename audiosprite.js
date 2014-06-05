@@ -216,7 +216,7 @@ function appendSilence(duration, dest, cb) {
 
 exportFile = function(src, dest, ext, opt, store, cb) {
   var outfile = dest + '.' + ext
-  spawn('ffmpeg',['-y', '-ac', NUM_CHANNELS, '-f', 's16le', '-i', src]
+  spawn('ffmpeg',['-y', '-ar', SAMPLE_RATE, '-ac', NUM_CHANNELS, '-f', 's16le', '-i', src]
       .concat(opt).concat(outfile))
     .on('exit', function(code, signal) {
       if (code) {
