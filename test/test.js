@@ -71,7 +71,7 @@ describe('audiosprite', function() {
       // Test resources array.
 
       assert.ok(json.resources, 'no resources list')
-      assert.ok(json.resources.length >= 4, 'not enought resources')
+      assert.ok(json.resources.length >= 4, 'not enough resources')
 
       json.resources.forEach(function(resource) {
         file = path.join(tmpdir, resource)

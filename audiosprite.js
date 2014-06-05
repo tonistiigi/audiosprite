@@ -83,13 +83,28 @@ winston.add(winston.transports.Console, {
 })
 winston.debug('Parsed arguments', argv)
 
-
 var SAMPLE_RATE = parseInt(argv.samplerate, 10)
 var NUM_CHANNELS = parseInt(argv.channels, 10)
 var GAP_SECONDS = parseFloat(argv.gap)
 var MINIMUM_SOUND_LENGTH = parseFloat(argv.minlength)
 
 var files = _.uniq(argv._)
+for (var i = 0; i < files.length; i++) {
+  if (files[i].indexOf('*.') > -1) {
+    var fileName = files[i]
+    var dir = fileName.substring(0, fileName.lastIndexOf('\\') + 1)
+    var ext = path.extname(fileName)
+    var dirFiles = fs.readdirSync(dir + '.')
+	var filtered = _.filter(dirFiles, function(s) { return s.indexOf(ext) > -1; })
+
+    for (var dF in filtered) {
+      files.push(dir + filtered[dF])
+    }
+
+    files.splice(i--, 1)
+  }
+}
+
 
 if (argv.help || !files.length) {
   if (!argv.help) {
