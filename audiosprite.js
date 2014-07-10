@@ -52,6 +52,11 @@ var optimist = require('optimist')
   , 'default': 0
   , describe: 'Minimum sound duration (in seconds).'
   })
+  .options('bitrate', {
+    alias: 'b'
+  , 'default': 128
+  , describe: 'Bit rate. Works for: ac3, mp3, mp4, m4a, ogg.'
+  })
   .options('samplerate', {
     alias: 'r'
   , 'default': 44100
@@ -84,6 +89,7 @@ winston.add(winston.transports.Console, {
 winston.debug('Parsed arguments', argv)
 
 
+var BIT_RATE = parseInt(argv.bitrate, 10)
 var SAMPLE_RATE = parseInt(argv.samplerate, 10)
 var NUM_CHANNELS = parseInt(argv.channels, 10)
 var GAP_SECONDS = parseFloat(argv.gap)
@@ -267,12 +273,12 @@ function exportFileCaf(src, dest, cb) {
 function processFiles() {
   var formats = {
     aiff: []
-  , ac3: '-acodec ac3'.split(' ')
-  , mp3: ['-ar', SAMPLE_RATE, '-ab', '128k', '-f', 'mp3']
-  , m4a: []
-  , ogg: '-acodec libvorbis -f ogg'.split(' ')
-  , mp4: []
   , wav: []
+  , ac3: ['-acodec', 'ac3', '-ab', BIT_RATE + 'k']
+  , mp3: ['-ar', SAMPLE_RATE, '-ab', BIT_RATE + 'k', '-f', 'mp3']
+  , mp4: ['-ab', BIT_RATE + 'k']
+  , m4a: ['-ab', BIT_RATE + 'k']
+  , ogg: ['-acodec', 'libvorbis', '-f', 'ogg', '-ab', BIT_RATE + 'k']
   }
 
   if (argv.export.length) {

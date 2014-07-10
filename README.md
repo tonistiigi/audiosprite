@@ -36,6 +36,7 @@ info: Options:
   --silence, -s     Add special "silence" track with specified duration.         [default: 0]
   --gap, -g         Silence duration between sounds (seconds).                   [default: 1]
   --minlength, -m   Minimum sound duration (seconds).                            [default: 0]
+  --bitrate, -b     Bit rate. Works for: ac3, mp3, mp4, m4a, ogg.                [default: 128]
   --samplerate, -r  Sample rate.                                                 [default: 44100]
   --channels, -c    Number of channels (1=mono, 2=stereo).                       [default: 1]
   --rawparts, -p    Include raw slices(for Web Audio API) in specified formats.  [default: ""]
