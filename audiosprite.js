@@ -348,6 +348,9 @@ function processFiles() {
           for (var sn in json.spritemap) {
             var spriteInfo = json.spritemap[sn]
             finalJson.sprite[sn] = [spriteInfo.start * 1000, (spriteInfo.end - spriteInfo.start) * 1000]
+            if (spriteInfo.loop) {
+              finalJson.sprite[sn].push(true)
+            }
           }
           break
 
