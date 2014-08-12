@@ -199,7 +199,7 @@ function appendFile(name, src, dest, cb) {
   reader.on('data', function(data) {
     size += data.length
   })
-  require('util').pump(reader, writer, function() {
+  reader.on('close', function() {
     var originalDuration = size / SAMPLE_RATE / NUM_CHANNELS / 2
     winston.info('File added OK', { file: src, duration: originalDuration })
     var extraDuration = Math.max(0, MINIMUM_SOUND_LENGTH - originalDuration)
@@ -212,6 +212,7 @@ function appendFile(name, src, dest, cb) {
     offsetCursor += originalDuration
     appendSilence(extraDuration + Math.ceil(duration) - duration + GAP_SECONDS, dest, cb)
   })
+  reader.pipe(writer)
 }
 
 function appendSilence(duration, dest, cb) {
@@ -248,7 +249,7 @@ exportFile = function(src, dest, ext, opt, store, cb) {
           cb()
         })
       } else {
-        winston.info("Exported " + ext + " OK", { file: outfile })
+        winston.info('Exported ' + ext + ' OK', { file: outfile })
         if (store) {
           json.resources.push(outfile)
         }
