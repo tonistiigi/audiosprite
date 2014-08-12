@@ -37,6 +37,10 @@ var optimist = require('optimist')
   , 'default': null
   , describe: 'Autoplay sprite name.'
   })
+  .options('loop', {
+    'default': null
+  , describe: 'Loop sprite name, can be passed multiple times.'
+  })
   .options('silence', {
     alias: 's'
   , 'default': 0
@@ -94,6 +98,8 @@ var SAMPLE_RATE = parseInt(argv.samplerate, 10)
 var NUM_CHANNELS = parseInt(argv.channels, 10)
 var GAP_SECONDS = parseFloat(argv.gap)
 var MINIMUM_SOUND_LENGTH = parseFloat(argv.minlength)
+
+var loops = argv.loop ? [].concat(argv.loop) : []
 
 var files = _.uniq(argv._)
 
@@ -201,7 +207,7 @@ function appendFile(name, src, dest, cb) {
     json.spritemap[name] = {
       start: offsetCursor
     , end: offsetCursor + duration
-    , loop: name === argv.autoplay
+    , loop: name === argv.autoplay || loops.indexOf(name) !== -1
     }
     offsetCursor += originalDuration
     appendSilence(extraDuration + Math.ceil(duration) - duration + GAP_SECONDS, dest, cb)
