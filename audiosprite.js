@@ -83,7 +83,6 @@ var optimist = require('optimist')
 
 var argv = optimist.argv
 
-winston.setLevels(winston.config.syslog.levels)
 winston.remove(winston.transports.Console)
 winston.add(winston.transports.Console, {
   colorize: true
