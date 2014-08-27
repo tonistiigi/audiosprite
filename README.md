@@ -14,6 +14,12 @@ iOS, Windows Phone and some Android phones have very limited HTML5 audio support
 npm install -g audiosprite
 ```
 
+You can install `FFmpeg` and the `ogg` codecs on OSX using `brew`:
+
+```
+brew install ffmpeg --with-theora --with-libogg --with-libvorbis
+```
+
 #### Hints for Windows users
 
 - You need to install [Node.js](https://www.nodejs.org/)
@@ -38,6 +44,7 @@ info: Options:
   --gap, -g         Silence gap between sounds (in seconds).                     [default: 1]
   --minlength, -m   Minimum sound duration (in seconds).                         [default: 0]
   --bitrate, -b     Bit rate. Works for: ac3, mp3, mp4, m4a, ogg.                [default: 128]
+  --vbr, -v         VBR [0-9]. Works for: mp3. -1 disables VBR.                  [default: -1]
   --samplerate, -r  Sample rate.                                                 [default: 44100]
   --channels, -c    Number of channels (1=mono, 2=stereo).                       [default: 1]
   --rawparts, -p    Include raw slices(for Web Audio API) in specified formats.  [default: ""]

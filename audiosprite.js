@@ -61,6 +61,11 @@ var optimist = require('optimist')
   , 'default': 128
   , describe: 'Bit rate. Works for: ac3, mp3, mp4, m4a, ogg.'
   })
+  .options('vbr', {
+    alias: 'v'
+  , 'default': -1
+  , describe: 'VBR [0-9]. Works for: mp3. -1 disables VBR.'
+  })
   .options('samplerate', {
     alias: 'r'
   , 'default': 44100
@@ -97,6 +102,7 @@ var SAMPLE_RATE = parseInt(argv.samplerate, 10)
 var NUM_CHANNELS = parseInt(argv.channels, 10)
 var GAP_SECONDS = parseFloat(argv.gap)
 var MINIMUM_SOUND_LENGTH = parseFloat(argv.minlength)
+var VBR = parseInt(argv.vbr, 10)
 
 var loops = argv.loop ? [].concat(argv.loop) : []
 
@@ -281,10 +287,17 @@ function processFiles() {
     aiff: []
   , wav: []
   , ac3: ['-acodec', 'ac3', '-ab', BIT_RATE + 'k']
-  , mp3: ['-ar', SAMPLE_RATE, '-ab', BIT_RATE + 'k', '-f', 'mp3']
+  , mp3: ['-ar', SAMPLE_RATE, '-f', 'mp3']
   , mp4: ['-ab', BIT_RATE + 'k']
   , m4a: ['-ab', BIT_RATE + 'k']
   , ogg: ['-acodec', 'libvorbis', '-f', 'ogg', '-ab', BIT_RATE + 'k']
+  }
+
+  if (VBR >= 0 && VBR <= 9) {
+    formats.mp3 = formats.mp3.concat(['-aq', VBR])
+  }
+  else {
+    formats.mp3 = formats.mp3.concat(['-ab', BIT_RATE + 'k'])
   }
 
   if (argv.export.length) {
