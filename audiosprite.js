@@ -354,7 +354,7 @@ function processFiles() {
       }
 
       json.resources = json.resources.map(function(e) {
-        return argv.path + e
+        return argv.path ? path.join(argv.path, path.basename(e)) : e
       })
 
       var finalJson = {}
