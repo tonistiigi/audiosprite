@@ -24,10 +24,11 @@
     "audiosprite": "./audiosprite.js"
   },
   "dependencies": {
+    "async": "~0.2.10",
+    "mkdirp": "^0.5.0",
     "optimist": "~0.6.1",
-    "winston": "~0.7.2",
     "underscore": "~1.6.0",
-    "async": "~0.2.10"
+    "winston": "~0.7.2"
   },
   "devDependencies": {
     "mocha": "~1.17.1"

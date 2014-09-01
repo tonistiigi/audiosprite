@@ -117,6 +117,12 @@ if (argv.help || !files.length) {
   process.exit(1)
 }
 
+// make sure output directory exists
+var outputDir = path.dirname(argv.output)
+if (!fs.existsSync(outputDir)) {
+  require('mkdirp').sync(outputDir)
+}
+
 var offsetCursor = 0
 var wavArgs = ['-ar', SAMPLE_RATE, '-ac', NUM_CHANNELS, '-f', 's16le']
 var tempFile = mktemp('audiosprite')
