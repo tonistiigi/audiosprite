@@ -228,7 +228,7 @@ function appendFile(name, src, dest, cb) {
 
 function appendSilence(duration, dest, cb) {
   var buffer = new Buffer(Math.round(SAMPLE_RATE * 2 * NUM_CHANNELS * duration))
-  buffer.fill(null)
+  buffer.fill(0)
   var writeStream = fs.createWriteStream(dest, { flags: 'a' })
   writeStream.end(buffer)
   writeStream.on('close', function() {
