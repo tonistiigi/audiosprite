@@ -25,7 +25,7 @@ var optimist = require('optimist')
   .options('format', {
     alias: 'f'
   , 'default': 'jukebox'
-  , describe: 'Format of the output JSON file (jukebox, howler).'
+  , describe: 'Format of the output JSON file (jukebox, howler, createjs).'
   })
   .options('log', {
     alias: 'l'
