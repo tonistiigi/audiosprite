@@ -238,7 +238,7 @@ function appendSilence(duration, dest, cb) {
   })
 }
 
-exportFile = function(src, dest, ext, opt, store, cb) {
+function exportFile(src, dest, ext, opt, store, cb) {
   var outfile = dest + '.' + ext
   spawn('ffmpeg',['-y', '-ar', SAMPLE_RATE, '-ac', NUM_CHANNELS, '-f', 's16le', '-i', src]
       .concat(opt).concat(outfile))
@@ -380,17 +380,17 @@ function processFiles() {
           break
 
         case 'createjs':
-          finalJson.src = json.resources[0];
-          finalJson.data = {audioSprite: []};
+          finalJson.src = json.resources[0]
+          finalJson.data = {audioSprite: []}
           for (var sn in json.spritemap) {
             var spriteInfo = json.spritemap[sn]
             finalJson.data.audioSprite.push({
               id: sn,
               startTime: spriteInfo.start * 1000,
               duration: (spriteInfo.end - spriteInfo.start) * 1000
-            });
+            })
           }
-          break;
+          break
 
         case 'default': // legacy support
         default:
