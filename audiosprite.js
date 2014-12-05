@@ -25,7 +25,7 @@ var optimist = require('optimist')
   .options('format', {
     alias: 'f'
   , 'default': 'jukebox'
-  , describe: 'Format of the output JSON file (jukebox, howler).'
+  , describe: 'Format of the output JSON file (jukebox, howler, createjs).'
   })
   .options('log', {
     alias: 'l'
@@ -378,6 +378,19 @@ function processFiles() {
             }
           }
           break
+
+        case 'createjs':
+          finalJson.src = json.resources[0];
+          finalJson.data = {audioSprite: []};
+          for (var sn in json.spritemap) {
+            var spriteInfo = json.spritemap[sn]
+            finalJson.data.audioSprite.push({
+              id: sn,
+              startTime: spriteInfo.start * 1000,
+              duration: (spriteInfo.end - spriteInfo.start) * 1000
+            });
+          }
+          break;
 
         case 'default': // legacy support
         default:
