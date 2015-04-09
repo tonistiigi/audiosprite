@@ -90,6 +90,20 @@ info: All done
 }
 ```
 
+###API Usage
+```js
+var audiosprite = require('audiosprite')
+
+var files = ['file1.mp3', 'file2.mp3']
+var opts = {output: 'result'}
+
+audiosprite(files, opts, function(err, obj) {
+  if (err) return console.error(err)
+
+  console.log(JSON.stringify(obj, null, 2))
+})
+```
+
 ####Setting autoplay track
 
 You can use `--autoplay` option to set a track that will start playing automatically. This track is then marked as autoplay and looping in the JSON. This syntax is Jukebox framework specific.
@@ -131,4 +145,3 @@ audio.play('click');
 ```
 
 *Don't forget to use the `--rawparts=mp3` option to benefit from the LimeJS feature to automatically switch to Web Audio API when it's supported by the client.*
-

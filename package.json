@@ -21,7 +21,7 @@
   },
   "main": "./audiosprite.js",
   "bin": {
-    "audiosprite": "./audiosprite.js"
+    "audiosprite": "./cli.js"
   },
   "dependencies": {
     "async": "~0.2.10",
