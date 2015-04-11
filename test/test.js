@@ -84,12 +84,12 @@ describe('audiosprite', function() {
 
       assert.ok(json.spritemap.beep, 'beep not found in sprite')
       assert.equal(json.spritemap.beep.start, 0, 'beep start time not 0')
-      assert.ok(Math.abs(1.77 - json.spritemap.beep.end) < .04, 'beep end time not 1.77')
+      assert.ok(Math.abs(1.75 - json.spritemap.beep.end) < .05, 'beep end time not 1.77')
       assert.equal(json.spritemap.beep.loop, false, 'beep should not be looping')
 
       assert.ok(json.spritemap.boop, 'boop not found in sprite')
       assert.equal(json.spritemap.boop.start, 3, 'boop start time not 3')
-      assert.ok(Math.abs(4.27 - json.spritemap.boop.end) < .04, 'boop end time not 4.27')
+      assert.ok(Math.abs(4.25 - json.spritemap.boop.end) < .05, 'boop end time not 4.27')
       assert.equal(json.spritemap.boop.loop, true, 'boop should not be looping')
 
       assert.equal(json.autoplay, 'boop', 'boop is not set as autoplay')
