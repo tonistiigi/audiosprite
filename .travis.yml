@@ -4,7 +4,7 @@ node_js:
   - "0.12"
   - "iojs"
   
-before_install:
-  - sudo add-apt-repository ppa:mc3man/trusty-media
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq ffmpeg
+before_script:
+  - wget http://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz
+  - tar xvf ffmpeg-release-64bit-static.tar.xz
+  - export PATH=$PATH:$PWD/ffmpeg-2.6.1-64bit-static
