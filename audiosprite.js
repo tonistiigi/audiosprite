@@ -28,8 +28,6 @@ var defaults = {
 module.exports = function(files) {
   var opts = {}, callback = function(){}
 
-  if (!files || !files.length) return callback(new Error('No input files specified.'))
-
   if (arguments.length == 2) {
     callback = arguments[1]
   } else if (arguments.length >= 3) {
@@ -37,7 +35,9 @@ module.exports = function(files) {
     callback = arguments[2]
   }
 
-  opts = _.extend(defaults, opts)
+  if (!files || !files.length) return callback(new Error('No input files specified.'))
+
+  opts = _.extend({}, defaults, opts)
 
   // make sure output directory exists
   var outputDir = path.dirname(opts.output)
