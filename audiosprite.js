@@ -310,6 +310,20 @@ module.exports = function(files) {
             }
             break
 
+          case 'waud':
+            finalJson.src = json.resources[0]
+            finalJson.sprite = []
+            for (var sn in json.spritemap) {
+              var spriteInfo = json.spritemap[sn]
+              finalJson.sprite.push({
+                name: sn,
+                start: spriteInfo.start,
+                duration: (spriteInfo.end - spriteInfo.start),
+                loop: spriteInfo.loop
+              })
+            }
+            break
+
           case 'default': // legacy support
           default:
             finalJson = json
