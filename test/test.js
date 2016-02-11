@@ -17,8 +17,8 @@ function cleanTmpDir() {
 }
 
 describe('audiosprite', function() {
-  before(cleanTmpDir)
-  after(cleanTmpDir)
+  beforeEach(cleanTmpDir)
+  afterEach(cleanTmpDir)
 
   it('generate audiosprite', function(done) {
     this.timeout(10000)
@@ -37,7 +37,30 @@ describe('audiosprite', function() {
       , path.join(__dirname, 'sounds/beep.mp3')
       , path.join(__dirname, 'sounds/boop.wav')
       ])
+	
+	checkOutput(audiosprite, done)
+  });
+  it('generate audiosprite from wildcard', function(done) {
+    this.timeout(10000)
 
+    process.chdir(tmpdir)
+
+    var audiosprite = spawn('node',
+      [ AUDIOSPRITE_PATH
+      , '--rawparts=mp3'
+      , '-o'
+      , OUTPUT
+      , '-l'
+      , 'debug'
+      , '--autoplay'
+      , 'boop'
+      , path.join(__dirname, 'sounds/*.mp3')
+      , path.join(__dirname, 'sounds/*.wav')
+      ])
+	
+	checkOutput(audiosprite, done)
+  });
+  function checkOutput(audiosprite, done) {
     var out = ''
     audiosprite.stdout.on('data', function(dt) {
       out += dt.toString('utf8')
@@ -108,6 +131,5 @@ describe('audiosprite', function() {
 
       done()
     })
-
-  });
+  }
 })
