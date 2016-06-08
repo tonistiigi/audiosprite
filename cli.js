@@ -66,6 +66,11 @@ var optimist = require('optimist')
   , 'default': -1
   , describe: 'VBR [0-9]. Works for: mp3. -1 disables VBR.'
   })
+  .options('vbr:vorbis', {
+    alias: 'q'
+    , 'default': -1
+    , describe: 'qscale [0-10 is highest quality]. Works for: webm. -1 disables qscale.'
+  })
   .options('samplerate', {
     alias: 'r'
   , 'default': 44100
@@ -105,6 +110,7 @@ opts.channels = parseInt(argv.channels, 10)
 opts.gap = parseFloat(argv.gap)
 opts.minlength = parseFloat(argv.minlength)
 opts.vbr = parseInt(argv.vbr, 10)
+opts['vbr:vorbis'] = parseInt(argv['vbr:vorbis'], 10)
 
 opts.loop = argv.loop ? [].concat(argv.loop) : []
 
