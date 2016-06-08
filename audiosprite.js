@@ -15,6 +15,7 @@ var defaults = {
   minlength: 0,
   bitrate: 128,
   vbr: -1,
+  'vbr:vorbis': -1,
   samplerate: 44100,
   channels: 1,
   rawparts: '',
@@ -217,7 +218,8 @@ module.exports = function(files) {
     , mp4: ['-ab', opts.bitrate + 'k']
     , m4a: ['-ab', opts.bitrate + 'k']
     , ogg: ['-acodec', 'libvorbis', '-f', 'ogg', '-ab', opts.bitrate + 'k']
-    }
+    , webm: ['-acodec',  'libvorbis', '-f', 'webm']
+    };
 
     if (opts.vbr >= 0 && opts.vbr <= 9) {
       formats.mp3 = formats.mp3.concat(['-aq', opts.vbr])
@@ -225,6 +227,15 @@ module.exports = function(files) {
     else {
       formats.mp3 = formats.mp3.concat(['-ab', opts.bitrate + 'k'])
     }
+
+    // change quality of webm output - https://trac.ffmpeg.org/wiki/TheoraVorbisEncodingGuide
+    if (opts['vbr:vorbis'] >= 0 && opts['vbr:vorbis'] <= 10) {
+      formats.webm = formats.webm.concat(['-qscale:a', opts['vbr:vorbis']])
+    }
+    else {
+      formats.webm = formats.webm.concat(['-ab', opts.bitrate + 'k'])
+    }
+
 
     if (opts.export.length) {
       formats = opts.export.split(',').reduce(function(memo, val) {
