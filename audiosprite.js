@@ -286,7 +286,8 @@ module.exports = function(files) {
         switch (opts.format) {
 
           case 'howler':
-            finalJson.urls = [].concat(json.resources)
+          case 'howler2':
+            finalJson[opts.format === 'howler' ? 'urls' : 'src'] = [].concat(json.resources)
             finalJson.sprite = {}
             for (var sn in json.spritemap) {
               var spriteInfo = json.spritemap[sn]
