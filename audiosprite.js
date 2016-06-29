@@ -218,6 +218,7 @@ module.exports = function(files) {
     , mp4: ['-ab', opts.bitrate + 'k']
     , m4a: ['-ab', opts.bitrate + 'k']
     , ogg: ['-acodec', 'libvorbis', '-f', 'ogg', '-ab', opts.bitrate + 'k']
+    , opus: ['-acodec', 'libopus', '-ab', opts.bitrate + 'k']
     , webm: ['-acodec',  'libvorbis', '-f', 'webm']
     };
 
