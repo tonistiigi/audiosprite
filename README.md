@@ -6,7 +6,7 @@ This is a `ffmpeg` wrapper that will take in **multiple audio files** and combin
 
 ### Why?
 
-iOS, Windows Phone and some Android phones have very limited HTML5 audio support. They only support playing single file at a time and loading in new files requires user interaction and has a big latency. To overcome this there is a technique to combine all audio into single file and only play/loop certain parts of that file. [zynga/jukebox](https://github.com/zynga/jukebox) is a audio framework that uses this technique.  [digitalfruit/limejs](https://github.com/digitalfruit/limejs) is a HTML5 game framework that includes Jukebox and lets you add audio to your games using audio sprites.
+iOS, Windows Phone and some Android phones have very limited HTML5 audio support. They only support playing a single file at a time and loading in new files requires user interaction and has a big latency. To overcome this there is a technique to combine all audio into single file and only play/loop certain parts of that file. [zynga/jukebox](https://github.com/zynga/jukebox) is a audio framework that uses this technique.  [digitalfruit/limejs](https://github.com/digitalfruit/limejs) is a HTML5 game framework that includes Jukebox and lets you add audio to your games using audio sprites.
 
 ###Installation
 
