@@ -98,10 +98,10 @@ module.exports = function(files) {
     var dest = mktemp('audiosprite')
 
     opts.logger.debug('Start processing', { file: src})
-
+    var remote = src.indexOf('http') == 0;
     fs.exists(src, function(exists) {
-      if (exists) {
-        var ffmpeg = spawn('ffmpeg', ['-i', path.resolve(src)]
+      if (exists || remote) {
+        var ffmpeg = spawn('ffmpeg', ['-i', remote?src:path.resolve(src)]
           .concat(wavArgs).concat('pipe:'))
         ffmpeg.stdout.pipe(fs.createWriteStream(dest, {flags: 'w'}))
         ffmpeg.on('exit', function(code, signal) {
