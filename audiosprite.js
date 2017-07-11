@@ -161,10 +161,12 @@ module.exports = function(files) {
 
   function exportFile(src, dest, ext, opt, store, cb) {
     var outfile = dest + '.' + ext
+    var consoleOutput = ''
     spawn('ffmpeg',['-y', '-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le', '-i', src]
         .concat(opt).concat(outfile))
       .on('exit', function(code, signal) {
         if (code) {
+          opts.logger.info(consoleOutput)
           return cb({
             msg: 'Error exporting file',
             format: ext,
@@ -187,6 +189,9 @@ module.exports = function(files) {
           }
           cb()
         }
+      })
+      .stderr.on('data', function(data) {
+        consoleOutput += data
       })
   }
 
