@@ -77,7 +77,7 @@ module.exports = function(files) {
   })
 
   function mktemp(prefix) {
-    var tmpdir = require('os').tmpDir() || '.'
+    var tmpdir = require('os').tmpdir() || '.'
     return path.join(tmpdir, prefix + '.' + Math.random().toString().substr(2))
   }
 
