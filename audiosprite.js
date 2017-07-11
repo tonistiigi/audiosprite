@@ -224,13 +224,14 @@ module.exports = function(files) {
   function processFiles() {
     var formats = {
       aiff: []
-      , wav: []
-      , ac3: ['-acodec', 'ac3', '-ab', opts.bitrate + 'k']
-      , mp3: ['-ar', opts.samplerate, '-f', 'mp3']
-      , mp4: ['-ab', opts.bitrate + 'k']
-      , m4a: ['-ab', opts.bitrate + 'k']
-      , ogg: ['-acodec', 'libvorbis', '-f', 'ogg', '-ab', opts.bitrate + 'k']
-      , webm: ['-acodec',  'libvorbis', '-f', 'webm']
+    , wav: []
+    , ac3: ['-acodec', 'ac3', '-ab', opts.bitrate + 'k']
+    , mp3: ['-ar', opts.samplerate, '-f', 'mp3']
+    , mp4: ['-ab', opts.bitrate + 'k']
+    , m4a: ['-ab', opts.bitrate + 'k']
+    , ogg: ['-acodec', 'libvorbis', '-f', 'ogg', '-ab', opts.bitrate + 'k']
+    , opus: ['-acodec', 'libopus', '-ab', opts.bitrate + 'k']
+    , webm: ['-acodec',  'libvorbis', '-f', 'webm']
     };
     
     if (opts.vbr >= 0 && opts.vbr <= 9) {
