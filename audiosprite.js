@@ -173,51 +173,52 @@ module.exports = function(files) {
     var outfile = dest + '.' + ext;
     
     spawn('ffmpeg',['-y', '-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le', '-i', src]
-    .concat(opt).concat(outfile))
-    .on('exit', function(code, signal) {
-      if (code) {
-        return cb({
-          msg: 'Error exporting file',
-          format: ext,
-          retcode: code,
-          signal: signal
-        })
-      }
-      if (ext === 'aiff') {
-        exportFileCaf(outfile, dest + '.caf', function(err) {
-          if (!err && store) {
-            json.resources.push(dest + '.caf')
-          }
-          fs.unlinkSync(outfile)
-          cb()
-        })
-      } else {
-        opts.logger.info('Exported ' + ext + ' OK', { file: outfile })
-        if (store) {
-          json.resources.push(outfile)
+      .concat(opt).concat(outfile))
+      .on('exit', function(code, signal) {
+        if (code) {
+          return cb({
+            msg: 'Error exporting file',
+            format: ext,
+            retcode: code,
+            signal: signal
+          })
         }
-        cb()
-      }
-    })
+        if (ext === 'aiff') {
+          exportFileCaf(outfile, dest + '.caf', function(err) {
+            if (!err && store) {
+              json.resources.push(dest + '.caf')
+            }
+            fs.unlinkSync(outfile)
+            cb()
+          })
+        } else {
+          opts.logger.info('Exported ' + ext + ' OK', { file: outfile })
+          if (store) {
+            json.resources.push(outfile)
+          }
+          cb()
+        }
+      })
   }
   
   function exportFileCaf(src, dest, cb) {
     if (process.platform !== 'darwin') {
       return cb(true)
     }
+    
     spawn('afconvert', ['-f', 'caff', '-d', 'ima4', src, dest])
-    .on('exit', function(code, signal) {
-      if (code) {
-        return cb({
-          msg: 'Error exporting file',
-          format: 'caf',
-          retcode: code,
-          signal: signal
-        })
-      }
-      opts.logger.info('Exported caf OK', { file: dest })
-      return cb()
-    })
+      .on('exit', function(code, signal) {
+        if (code) {
+          return cb({
+            msg: 'Error exporting file',
+            format: 'caf',
+            retcode: code,
+            signal: signal
+          })
+        }
+        opts.logger.info('Exported caf OK', { file: dest })
+        return cb()
+      })
   }
   
   function processFiles() {
@@ -324,22 +325,22 @@ module.exports = function(files) {
             break
           
           case 'createjs':
-          finalJson.src = json.resources[0]
-          finalJson.data = {audioSprite: []}
-          for (var sn in json.spritemap) {
-            var spriteInfo = json.spritemap[sn]
-            finalJson.data.audioSprite.push({
-              id: sn,
-              startTime: spriteInfo.start * 1000,
-              duration: (spriteInfo.end - spriteInfo.start) * 1000
-            })
-          }
-          break
+            finalJson.src = json.resources[0]
+            finalJson.data = {audioSprite: []}
+            for (var sn in json.spritemap) {
+              var spriteInfo = json.spritemap[sn]
+              finalJson.data.audioSprite.push({
+                id: sn,
+                startTime: spriteInfo.start * 1000,
+                duration: (spriteInfo.end - spriteInfo.start) * 1000
+              })
+            }
+            break
           
           case 'default':
           default:
-          finalJson = json
-          break
+            finalJson = json
+            break
         }
         
         fs.unlinkSync(tempFile)
