@@ -228,7 +228,7 @@ module.exports = function(files) {
     , ac3: ['-acodec', 'ac3', '-ab', opts.bitrate + 'k']
     , mp3: ['-ar', opts.samplerate, '-f', 'mp3']
     , mp4: ['-ab', opts.bitrate + 'k']
-    , m4a: ['-ab', opts.bitrate + 'k']
+    , m4a: ['-ab', opts.bitrate + 'k', '-strict', '-2']
     , ogg: ['-acodec', 'libvorbis', '-f', 'ogg', '-ab', opts.bitrate + 'k']
     , opus: ['-acodec', 'libopus', '-ab', opts.bitrate + 'k']
     , webm: ['-acodec',  'libvorbis', '-f', 'webm']
