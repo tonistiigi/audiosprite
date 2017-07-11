@@ -1,8 +1,7 @@
 language: node_js
 node_js:
-  - "0.10"
-  - "0.12"
-  - "iojs"
+  - "7"
+  - "node"
   
 before_script:
   - wget http://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz

@@ -6,7 +6,7 @@ var assert = require('assert')
 var AUDIOSPRITE_PATH = path.join(__dirname, '../', 'cli.js')
   , OUTPUT = 'audiosprite-test-out' + ~~(Math.random() * 1e6)
 
-var tmpdir = require('os').tmpDir() || '.'
+var tmpdir = require('os').tmpdir() || '.'
 
 function cleanTmpDir() {
   fs.readdirSync(tmpdir).forEach(function(file) {
@@ -20,7 +20,7 @@ describe('audiosprite', function() {
   beforeEach(cleanTmpDir)
   afterEach(cleanTmpDir)
 
-  it('generate audiosprite', function(done) {
+  it('generates audiosprite files', function(done) {
     this.timeout(10000)
 
     process.chdir(tmpdir)
@@ -38,9 +38,10 @@ describe('audiosprite', function() {
       , path.join(__dirname, 'sounds/boop.wav')
       ])
 	
-	checkOutput(audiosprite, done)
+	  checkOutput(audiosprite, done)
   });
-  it('generate audiosprite from wildcard', function(done) {
+
+  it('generates audiosprite from wildcard', function(done) {
     this.timeout(10000)
 
     process.chdir(tmpdir)
@@ -58,10 +59,12 @@ describe('audiosprite', function() {
       , path.join(__dirname, 'sounds/*.wav')
       ])
 	
-	checkOutput(audiosprite, done)
+	  checkOutput(audiosprite, done)
   });
+
   function checkOutput(audiosprite, done) {
     var out = ''
+
     audiosprite.stdout.on('data', function(dt) {
       out += dt.toString('utf8')
     })
@@ -94,7 +97,7 @@ describe('audiosprite', function() {
       // Test resources array.
 
       assert.ok(json.resources, 'no resources list')
-      assert.ok(json.resources.length >= 4, 'not enought resources')
+      assert.ok(json.resources.length >= 4, 'not enough resources')
 
       json.resources.forEach(function(resource) {
         file = path.join(tmpdir, resource)
