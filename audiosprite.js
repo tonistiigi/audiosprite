@@ -231,7 +231,7 @@ module.exports = function(files) {
     , m4a: ['-ab', opts.bitrate + 'k', '-strict', '-2']
     , ogg: ['-acodec', 'libvorbis', '-f', 'ogg', '-ab', opts.bitrate + 'k']
     , opus: ['-acodec', 'libopus', '-ab', opts.bitrate + 'k']
-    , webm: ['-acodec',  'libvorbis', '-f', 'webm']
+    , webm: ['-acodec',  'libvorbis', '-f', 'webm', '-dash', '1']
     };
     
     if (opts.vbr >= 0 && opts.vbr <= 9) {
