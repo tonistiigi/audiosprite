@@ -24,7 +24,7 @@ npm install -g git+https://github.com/tonistiigi/audiosprite.git
 You can install `FFmpeg` and the `ogg` codecs on OSX using `brew`:
 
 ```
-brew install ffmpeg --with-theora --with-libogg --with-libvorbis
+brew install ffmpeg --with-theora --with-libvorbis
 ```
 
 #### Hints for Windows users
@@ -34,7 +34,7 @@ brew install ffmpeg --with-theora --with-libogg --with-libvorbis
 - Download [ffmpeg](http://ffmpeg.zeranoe.com/builds/) and include it in your path `export PATH=$PATH:path/to/ffmpeg/bin`
 - IMA-ADPCM(the fastest iPhone format) will only be generated if you are using OSX.
 
-###Usage
+### Usage
 
 ```
 > audiosprite --help
