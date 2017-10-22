@@ -106,9 +106,9 @@ module.exports = function(files) {
 
   function makeRawAudioFile(src, cb) {
     var dest = mktemp('audiosprite')
-
-    opts.logger.debug('Start processing', { file: src})
-var remote = src.indexOf('http') == 0;
+    
+    opts.logger.debug('Start processing', { file: src })
+    var remote = src.indexOf('http') == 0;
     fs.exists(src, function(exists) {
       if (exists || remote) {
         let ffmpeg = spawn('ffmpeg', ['-i', remote?src:path.resolve(src)]
