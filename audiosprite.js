@@ -40,7 +40,11 @@ module.exports = function(files) {
   if (!files || !files.length) {
     return callback(new Error('No input files specified.'))
   } else {
-    files = _.flatten(files.map(file => glob.sync(file)));
+    if( !opts.remoteSrc) {
+      files = _.flatten(files.map(file => glob.sync(file)));
+    }
+
+
   }
 
   opts = _.extend({}, defaults, opts)
