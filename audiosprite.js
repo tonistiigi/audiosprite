@@ -29,39 +29,43 @@ const defaults = {
 
 module.exports = function(files) {
   let opts = {}, callback = function(){}
-  
+
   if (arguments.length === 2) {
     callback = arguments[1]
   } else if (arguments.length >= 3) {
     opts = arguments[1]
     callback = arguments[2]
   }
-  
+
   if (!files || !files.length) {
     return callback(new Error('No input files specified.'))
   } else {
-    files = _.flatten(files.map(file => glob.sync(file)));
+    if( !opts.remoteSrc) {
+      files = _.flatten(files.map(file => glob.sync(file)));
+    }
+
+
   }
-  
+
   opts = _.extend({}, defaults, opts)
-  
+
   // make sure output directory exists
   const outputDir = path.dirname(opts.output)
   if (!fs.existsSync(outputDir)) {
     require('mkdirp').sync(outputDir)
   }
-  
+
   let offsetCursor = 0
   const wavArgs = ['-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le']
   const tempFile = mktemp('audiosprite')
-  
+
   opts.logger.debug('Created temporary file', { file: tempFile })
-  
+
   const json = {
     resources: []
     , spritemap: {}
   }
-  
+
   spawn('ffmpeg', ['-version']).on('exit', code => {
     if (code) {
       callback(new Error('ffmpeg was not found on your path'))
@@ -83,17 +87,17 @@ module.exports = function(files) {
       processFiles()
     }
   })
-  
+
   function mktemp(prefix) {
     var tmpdir = require('os').tmpdir() || '.';
     return path.join(tmpdir, prefix + '.' + Math.random().toString().substr(2));
   }
-  
+
   function spawn(name, opt) {
     opts.logger.debug('Spawn', { cmd: [name].concat(opt).join(' ') });
     return require('child_process').spawn(name, opt);
   }
-  
+
   function pad(num, size) {
     var str = num.toString();
 
@@ -103,15 +107,15 @@ module.exports = function(files) {
 
     return str;
   }
-  
+
   function makeRawAudioFile(src, cb) {
     var dest = mktemp('audiosprite')
     
     opts.logger.debug('Start processing', { file: src })
-    
+    var remote = src.indexOf('http') == 0;
     fs.exists(src, function(exists) {
-      if (exists) {
-        let ffmpeg = spawn('ffmpeg', ['-i', path.resolve(src)]
+      if (exists || remote) {
+        let ffmpeg = spawn('ffmpeg', ['-i', remote?src:path.resolve(src)]
           .concat(wavArgs).concat('pipe:'))
         ffmpeg.stdout.pipe(fs.createWriteStream(dest, {flags: 'w'}))
         ffmpeg.on('exit', function(code, signal) {
@@ -125,13 +129,13 @@ module.exports = function(files) {
           }
           cb(null, dest)
         })
-      } 
+      }
       else {
         cb({ msg: 'File does not exist', file: src })
       }
     })
   }
-  
+
   function appendFile(name, src, dest, cb) {
     var size = 0
     var reader = fs.createReadStream(src)
@@ -156,7 +160,7 @@ module.exports = function(files) {
     })
     reader.pipe(writer)
   }
-  
+
   function appendSilence(duration, dest, cb) {
     var buffer = new Buffer(Math.round(opts.samplerate * 2 * opts.channels * duration))
     buffer.fill(0)
@@ -168,10 +172,10 @@ module.exports = function(files) {
       cb()
     })
   }
-  
+
   function exportFile(src, dest, ext, opt, store, cb) {
     var outfile = dest + '.' + ext;
-    
+
     spawn('ffmpeg',['-y', '-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le', '-i', src]
       .concat(opt).concat(outfile))
       .on('exit', function(code, signal) {
@@ -200,12 +204,12 @@ module.exports = function(files) {
         }
       })
   }
-  
+
   function exportFileCaf(src, dest, cb) {
     if (process.platform !== 'darwin') {
       return cb(true)
     }
-    
+
     spawn('afconvert', ['-f', 'caff', '-d', 'ima4', src, dest])
       .on('exit', function(code, signal) {
         if (code) {
@@ -220,7 +224,7 @@ module.exports = function(files) {
         return cb()
       })
   }
-  
+
   function processFiles() {
     var formats = {
       aiff: []
@@ -231,16 +235,16 @@ module.exports = function(files) {
     , m4a: ['-ab', opts.bitrate + 'k', '-strict', '-2']
     , ogg: ['-acodec', 'libvorbis', '-f', 'ogg', '-ab', opts.bitrate + 'k']
     , opus: ['-acodec', 'libopus', '-ab', opts.bitrate + 'k']
-    , webm: ['-acodec',  'libvorbis', '-f', 'webm']
+    , webm: ['-acodec',  'libvorbis', '-f', 'webm', '-dash', '1']
     };
-    
+
     if (opts.vbr >= 0 && opts.vbr <= 9) {
       formats.mp3 = formats.mp3.concat(['-aq', opts.vbr])
     }
     else {
       formats.mp3 = formats.mp3.concat(['-ab', opts.bitrate + 'k'])
     }
-    
+
     // change quality of webm output - https://trac.ffmpeg.org/wiki/TheoraVorbisEncodingGuide
     if (opts['vbr:vorbis'] >= 0 && opts['vbr:vorbis'] <= 10) {
       formats.webm = formats.webm.concat(['-qscale:a', opts['vbr:vorbis']])
@@ -248,7 +252,7 @@ module.exports = function(files) {
     else {
       formats.webm = formats.webm.concat(['-ab', opts.bitrate + 'k'])
     }
-    
+
     if (opts.export.length) {
       formats = opts.export.split(',').reduce(function(memo, val) {
         if (formats[val]) {
@@ -257,7 +261,7 @@ module.exports = function(files) {
         return memo
       }, {})
     }
-    
+
     var rawparts = opts.rawparts.length ? opts.rawparts.split(',') : null
     var i = 0
     console.log(files);
@@ -269,12 +273,12 @@ module.exports = function(files) {
           console.log(err);
           return cb(err)
         }
-        
+
         function tempProcessed() {
           fs.unlinkSync(tmp)
           cb()
         }
-        
+
         var name = path.basename(file).replace(/\.[a-zA-Z0-9]+$/, '')
         appendFile(name, tmp, tempFile, function(err) {
           if (rawparts != null ? rawparts.length : void 0) {
@@ -292,7 +296,7 @@ module.exports = function(files) {
       if (err) {
         return callback(new Error('Error adding file ' + err.message))
       }
-      
+
       async.forEachSeries(Object.keys(formats), function(ext, cb) {
         opts.logger.debug('Start export', { format: ext })
         exportFile(tempFile, opts.output, ext, formats[ext], true, cb)
@@ -303,15 +307,15 @@ module.exports = function(files) {
         if (opts.autoplay) {
           json.autoplay = opts.autoplay
         }
-        
+
         json.resources = json.resources.map(function(e) {
           return opts.path ? path.join(opts.path, path.basename(e)) : e
         })
-        
+
         var finalJson = {}
-        
+
         switch (opts.format) {
-          
+
           case 'howler':
           case 'howler2':
             finalJson[opts.format === 'howler' ? 'urls' : 'src'] = [].concat(json.resources)
@@ -324,7 +328,7 @@ module.exports = function(files) {
               }
             }
             break
-          
+
           case 'createjs':
             finalJson.src = json.resources[0]
             finalJson.data = {audioSprite: []}
@@ -337,13 +341,13 @@ module.exports = function(files) {
               })
             }
             break
-          
+
           case 'default':
           default:
             finalJson = json
             break
         }
-        
+
         fs.unlinkSync(tempFile)
         callback(null, finalJson)
       })

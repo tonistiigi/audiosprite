@@ -1,6 +1,6 @@
 {
-  "name": "audiosprite",
-  "description": "Concat small audio files into single file and export in many formats.",
+  "name": "audiosprite-ca",
+  "description": "Concat small audio files into single file and export in many formats. (support for remote resources)",
   "keywords": [
     "audio",
     "audio-sprite",
@@ -8,7 +8,7 @@
     "ffmpeg"
   ],
   "author": "Tõnis Tiigi <tonistiigi@gmail.com>",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "licenses": [
     {
       "type": "MIT",
