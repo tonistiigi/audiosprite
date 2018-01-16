@@ -86,6 +86,11 @@ var optimist = require('optimist')
   , 'default': ''
   , describe: 'Include raw slices(for Web Audio API) in specified formats.'
   })
+  .options('ignorerounding', {
+    alias: 'i'
+  , 'default': 0
+  , describe: 'Bypass sound placement on whole second boundaries (0=round,1=bypass).'
+  })
   .options('help', {
     alias: 'h'
   , describe: 'Show this help message.'
@@ -113,6 +118,8 @@ opts.vbr = parseInt(argv.vbr, 10)
 opts['vbr:vorbis'] = parseInt(argv['vbr:vorbis'], 10)
 
 opts.loop = argv.loop ? [].concat(argv.loop) : []
+
+opts.ignorerounding = parseInt(argv.ignorerounding, 0)
 
 var files = _.uniq(argv._)
 

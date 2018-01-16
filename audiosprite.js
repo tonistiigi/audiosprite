@@ -20,6 +20,7 @@ const defaults = {
   samplerate: 44100,
   channels: 1,
   rawparts: '',
+  ignorerounding: 0,
   logger: {
     debug: function(){},
     info: function(){},
@@ -152,7 +153,16 @@ module.exports = function(files) {
         , loop: name === opts.autoplay || opts.loop.indexOf(name) !== -1
       }
       offsetCursor += originalDuration
-      appendSilence(extraDuration + Math.ceil(duration) - duration + opts.gap, dest, cb)
+
+      var delta = Math.ceil(duration) - duration;
+
+      if (opts.ignorerounding)
+      {
+        opts.logger.info('Ignoring nearest second silence gap rounding');
+        delta = 0;
+      }
+
+      appendSilence(extraDuration + delta + opts.gap, dest, cb)
     })
     reader.pipe(writer)
   }
