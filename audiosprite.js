@@ -270,12 +270,13 @@ module.exports = function(files) {
     
     var rawparts = opts.rawparts.length ? opts.rawparts.split(',') : null
     var i = 0
+    opts.logger.debug(files);
     async.forEachSeries(files, function(file, cb) {
       i++
 
       makeRawAudioFile(file, function(err, tmp) {
         if (err) {
-          console.log(err);
+          opts.logger.debug(err);
           return cb(err)
         }
         
