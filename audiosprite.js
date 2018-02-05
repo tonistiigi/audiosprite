@@ -270,7 +270,6 @@ module.exports = function(files) {
     
     var rawparts = opts.rawparts.length ? opts.rawparts.split(',') : null
     var i = 0
-    console.log(files);
     async.forEachSeries(files, function(file, cb) {
       i++
 
