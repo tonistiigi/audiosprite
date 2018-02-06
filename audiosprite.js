@@ -108,7 +108,7 @@ module.exports = function(files) {
   function makeRawAudioFile(src, cb) {
     var dest = mktemp('audiosprite')
     
-    opts.logger.info('Start processing', { file: src })
+    opts.logger.debug('Start processing', { file: src })
     
     fs.exists(src, function(exists) {
       if (exists) {
