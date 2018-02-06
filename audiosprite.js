@@ -108,7 +108,7 @@ module.exports = function(files) {
   function makeRawAudioFile(src, cb) {
     var dest = mktemp('audiosprite')
     
-    opts.logger.debug('Start processing', { file: src })
+    opts.logger.info('Start processing', { file: src })
     
     fs.exists(src, function(exists) {
       if (exists) {
@@ -270,7 +270,7 @@ module.exports = function(files) {
     
     var rawparts = opts.rawparts.length ? opts.rawparts.split(',') : null
     var i = 0
-    opts.logger.debug(files);
+    opts.logger.info(files);
     async.forEachSeries(files, function(file, cb) {
       i++
 
