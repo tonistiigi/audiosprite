@@ -159,6 +159,7 @@ module.exports = function(files) {
       if (opts.ignorerounding)
       {
         opts.logger.info('Ignoring nearest second silence gap rounding');
+        extraDuration = 0;
         delta = 0;
       }
 
