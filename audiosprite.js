@@ -115,7 +115,7 @@ module.exports = function(files) {
         let ffmpeg = spawn('ffmpeg', ['-i', path.resolve(src)]
           .concat(wavArgs).concat('pipe:'))
         ffmpeg.stdout.pipe(fs.createWriteStream(dest, {flags: 'w'}))
-        ffmpeg.on('exit', function(code, signal) {
+        ffmpeg.on('close', function(code, signal) {
           if (code) {
             return cb({
               msg: 'File could not be added',
