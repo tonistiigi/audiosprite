@@ -1,10 +1,4 @@
 language: node_js
 node_js:
-  - "7"
+  - "10"
   - "node"
-  
-before_script:
-  - wget http://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz
-  - tar xvf ffmpeg-release-64bit-static.tar.xz
-  - mv ffmpeg-*.*.*-64bit-static ffmpeg
-  - export PATH=$PATH:$PWD/ffmpeg
