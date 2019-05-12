@@ -3,6 +3,7 @@ const path = require('path')
 const async = require('async')
 const _ = require('underscore')._
 const glob = require('glob');
+const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
 
 const defaults = {
   output: 'output',
@@ -63,7 +64,7 @@ module.exports = function(files) {
     , spritemap: {}
   }
   
-  spawn('ffmpeg', ['-version']).on('exit', code => {
+  spawn(ffmpegPath, ['-version']).on('exit', code => {
     if (code) {
       callback(new Error('ffmpeg was not found on your path'))
     }
@@ -112,7 +113,7 @@ module.exports = function(files) {
     
     fs.exists(src, function(exists) {
       if (exists) {
-        let ffmpeg = spawn('ffmpeg', ['-i', path.resolve(src)]
+        let ffmpeg = spawn(ffmpegPath, ['-i', path.resolve(src)]
           .concat(wavArgs).concat('pipe:'))
         ffmpeg.stdout.pipe(fs.createWriteStream(dest, {flags: 'w'}))
         ffmpeg.on('close', function(code, signal) {
@@ -183,7 +184,7 @@ module.exports = function(files) {
   function exportFile(src, dest, ext, opt, store, cb) {
     var outfile = dest + '.' + ext;
     
-    spawn('ffmpeg',['-y', '-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le', '-i', src]
+    spawn(ffmpegPath,['-y', '-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le', '-i', src]
       .concat(opt).concat(outfile))
       .on('exit', function(code, signal) {
         if (code) {
