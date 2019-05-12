@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/y0n1/audiosprite-ffmpg.png)](http://travis-ci.org/y0n1/audiosprite-ffmpg)
+[![Build Status](https://travis-ci.org/y0n1/audiosprite-ffmpeg.svg?branch=master)](https://travis-ci.org/y0n1/audiosprite-ffmpeg)
 
 # :warning: This project is a fork of [Audiosprite](https://github.com/tonistiigi/audiosprite) by Tõnis Tiigi which installs ffmpeg binaries from NPM.
 
