@@ -8,7 +8,7 @@
     "ffmpeg"
   ],
   "author": "y0n1 <y0n1@outlook.com>",
-  "version": "0.8.1",
+  "version": "0.7.2",
   "licenses": [
     {
       "type": "MIT",
@@ -17,7 +17,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/y0n1/audiosprite-ffmpeg.git"
+    "url": "git+https://github.com/y0n1/audiosprite-ffmpeg.git"
   },
   "main": "./audiosprite.js",
   "bin": {
@@ -36,7 +36,7 @@
     "mocha": "~2.2.4"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=7"
   },
   "scripts": {
     "test": "mocha",
