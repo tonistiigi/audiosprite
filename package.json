@@ -1,5 +1,5 @@
 {
-  "name": "audiosprite",
+  "name": "audiosprite-ffmpeg",
   "description": "Concat small audio files into single file and export in many formats.",
   "keywords": [
     "audio",
@@ -7,17 +7,17 @@
     "jukebox",
     "ffmpeg"
   ],
-  "author": "Tõnis Tiigi <tonistiigi@gmail.com>",
-  "version": "0.7.1",
+  "author": "y0n1 <y0n1@outlook.com>",
+  "version": "0.8.1",
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://raw.githubusercontent.com/tonistiigi/audiosprite/master/LICENSE"
+      "url": "https://raw.githubusercontent.com/y0n1/audiosprite-ffmpeg/master/LICENSE"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/tonistiigi/audiosprite.git"
+    "url": "git://github.com/y0n1/audiosprite-ffmpeg.git"
   },
   "main": "./audiosprite.js",
   "bin": {
@@ -36,10 +36,10 @@
     "mocha": "~2.2.4"
   },
   "engines": {
-    "node": ">=0.10"
+    "node": ">=10"
   },
-  "optionalDependencies": {},
   "scripts": {
     "test": "mocha"
+    "prepublish": "npm run test"
   }
 }
