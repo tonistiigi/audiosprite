@@ -1,4 +1,12 @@
 language: node_js
 node_js:
-  - "10"
-  - "node"
+- '10'
+- node
+deploy:
+  provider: npm
+  email: y0n1@outlook.com
+  api_key:
+    secure: SIB9HMF/MAEeFsB6XDFAzSYR4TXZOLO3GuICeDmwynYuQjZZf8LNFyq4BL1PZ3x1MWbE6Kt/jpf2E1Qu/dkewn7sxMJ3vr87Nq8w0yeO9lN0a3uda1OeWtavjgB+olWkOkuLSB6KFyI3OS9ebDSnjl1E7B3yjTZId5kqeREtHI1k0qQi6lrzazutrcBn8Co924E9NQxc2yY+dCepn71ok3jE096pD1K3FaT1QYj5ztJrtnwhRFhoE9g44mM4yPP9DGJUvCL6sbhbT7bzrecWa8qrNM7ufmeWRA7QIVU4wFD46GWDQH23ep/zZgSZC9pPtBlXp30Fdi5oYAVvy0nTiHg4GArn/ML3d3rLBNXUsK7kPqxNAh+gRMBft7tntPaKqr24P2J5svT27QxrNDIWQd7yM80yr8xZM1CGwy/jv6UnGvTZl1LvXkjNo6MDUH4vpgJaWCiIULfIkDyOltqw0l7BdCOHUZAtZ9rQc3bvuclQpGOwAfjWkr5a2dVu6poAzea4nHuatRgiWn08DVdT0yCl5v0PxMkkySayfGUjDMk7ZGdBfq5u8Ag4+K1rzefeqdei0IiNCR8m+8IA9Z//gotIOUWICCAdeyrNmqsKQb4TXy3NIjc2gGZo46Y0H+lLaAJG7HsoCweX7z165Qj3OJz+Ez4du/hGPJqckdQtxwo=
+  on:
+    tags: true
+    repo: y0n1/audiosprite-ffmpeg
