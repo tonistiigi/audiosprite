@@ -9,12 +9,7 @@
   ],
   "author": "y0n1 <y0n1@outlook.com>",
   "version": "0.7.3",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://raw.githubusercontent.com/y0n1/audiosprite-ffmpeg/master/LICENSE"
-    }
-  ],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/y0n1/audiosprite-ffmpeg.git"
