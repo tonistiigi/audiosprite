@@ -32,7 +32,7 @@
     "mocha": "~2.2.4"
   },
   "engines": {
-    "node": ">=7"
+    "node": ">=8"
   },
   "scripts": {
     "test": "mocha"
