@@ -28,6 +28,7 @@
     "winston": "~1.0.0"
   },
   "devDependencies": {
+    "eslint": "^5.16.0",
     "mocha": "~2.2.4"
   },
   "engines": {
