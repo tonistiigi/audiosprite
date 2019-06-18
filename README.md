@@ -43,7 +43,7 @@ info: Options:
   --output, -o          Name for the output files.                                               [default: "output"]
   --path, -u            Path for files to be used on final JSON.                                 [default: ""]
   --export, -e          Limit exported file types. Comma separated extension list.               [default: "ogg,m4a,mp3,ac3"]
-  --format, -f          Format of the output JSON file (jukebox, howler, createjs).              [default: "jukebox"]
+  --format, -f          Format of the output JSON file (jukebox, howler, howler2, createjs).     [default: "jukebox"]
   --log, -l             Log level (debug, info, notice, warning, error).                         [default: "info"]
   --autoplay, -a        Autoplay sprite name.                                                    [default: null]
   --loop                Loop sprite name, can be passed multiple times.                          [default: null]
