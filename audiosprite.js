@@ -112,10 +112,11 @@ module.exports = function(files) {
     
     fs.exists(src, function(exists) {
       if (exists) {
+        let code = -1
+        let signal = undefined
         let ffmpeg = spawn('ffmpeg', ['-i', path.resolve(src)]
           .concat(wavArgs).concat('pipe:'))
-        ffmpeg.stdout.pipe(fs.createWriteStream(dest, {flags: 'w'}))
-        ffmpeg.on('close', function(code, signal) {
+        let streamFinished = _.after(2, function () {
           if (code) {
             return cb({
               msg: 'File could not be added',
@@ -125,6 +126,14 @@ module.exports = function(files) {
             })
           }
           cb(null, dest)
+        });
+        let writeStream = fs.createWriteStream(dest, {flags: 'w'})
+        ffmpeg.stdout.pipe(writeStream)
+        writeStream.on('close', streamFinished)
+        ffmpeg.on('close', function(_code, _signal) {
+          code = _code
+          signal = _signal
+          streamFinished()
         })
       } 
       else {
