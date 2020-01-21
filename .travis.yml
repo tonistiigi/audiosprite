@@ -4,7 +4,7 @@ node_js:
   - "node"
   
 before_script:
-  - wget http://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz
-  - tar xvf ffmpeg-release-64bit-static.tar.xz
-  - mv ffmpeg-*.*.*-64bit-static ffmpeg
+  - wget http://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
+  - tar xvf ffmpeg-release-amd64-static.tar.xz
+  - mv ffmpeg-*.*.*-amd64-static ffmpeg
   - export PATH=$PATH:$PWD/ffmpeg
