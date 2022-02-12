@@ -311,7 +311,8 @@ module.exports = function(files) {
       })
     }, function(err) {
       if (err) {
-        return callback(new Error('Error adding file ' + err.message))
+        var message = err.message || err.msg;
+        return callback(new Error('Error adding file ' + message))
       }
 
       async.forEachSeries(Object.keys(formats), function(ext, cb) {
