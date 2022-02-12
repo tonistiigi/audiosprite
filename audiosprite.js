@@ -26,7 +26,7 @@ const defaults = {
     info: function(){},
     log: function(){}
   },
-  ffmpegPath: 'ffmpeg',
+  ffmpegpath: 'ffmpeg',
 }
 
 module.exports = function(files) {
@@ -64,7 +64,7 @@ module.exports = function(files) {
     , spritemap: {}
   }
 
-  spawn(opts.ffmpegPath, ['-version']).on('exit', code => {
+  spawn(opts.ffmpegpath, ['-version']).on('exit', code => {
     if (code) {
       callback(new Error('ffmpeg was not found on your path'))
     }
@@ -115,7 +115,7 @@ module.exports = function(files) {
       if (exists) {
         let code = -1
         let signal = undefined
-        let ffmpeg = spawn(opts.ffmpegPath, ['-i', path.resolve(src)]
+        let ffmpeg = spawn(opts.ffmpegpath, ['-i', path.resolve(src)]
           .concat(wavArgs).concat('pipe:'))
         let streamFinished = _.after(2, function () {
           if (code) {
@@ -193,7 +193,7 @@ module.exports = function(files) {
   function exportFile(src, dest, ext, opt, store, cb) {
     var outfile = dest + '.' + ext;
 
-    spawn(opts.ffmpegPath,['-y', '-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le', '-i', src]
+    spawn(opts.ffmpegpath,['-y', '-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le', '-i', src]
       .concat(opt).concat(outfile))
       .on('exit', function(code, signal) {
         if (code) {

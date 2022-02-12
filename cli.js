@@ -17,6 +17,10 @@ var optimist = require('optimist')
   , 'default': ''
   , describe: 'Path for files to be used on final JSON.'
   })
+  .options('ffmpegpath', {
+    'default': ''
+  , describe: 'Path to your ffmpeg installation. If not specified, ffmpeg should be in your PATH.'
+  })
   .options('export', {
     alias: 'e'
   , 'default': 'ogg,m4a,mp3,ac3'
