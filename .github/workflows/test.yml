@@ -16,4 +16,10 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run lint
-      - run: npm run test
+      - run: |
+            wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
+            tar xvf ffmpeg-release-amd64-static.tar.xz
+            mv ffmpeg-*.*.*-amd64-static ffmpeg
+            export PATH=$PATH:$PWD/ffmpeg
+            ffmpeg -version
+            npm run test

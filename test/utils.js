@@ -106,7 +106,7 @@ function scriptSpawnTemplate(...soundsPaths) {
 }
 
 function defaultTest(done) {
-  this.timeout(1000000);
+  this.timeout(10000);
   process.chdir(TMPDIR);
   const audiosprite = scriptSpawnTemplate(...sounds);
   checkOutput(audiosprite, done);
