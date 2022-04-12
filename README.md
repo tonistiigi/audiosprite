@@ -12,12 +12,7 @@ iOS, Windows Phone and some Android phones have very limited HTML5 audio support
 
 #### via npm package
 ```
-npm install -g audiosprite
-```
-
-### via github (latest)
-```
-npm install -g git+https://github.com/tonistiigi/audiosprite.git
+npm install audiosprite-fresh
 ```
 
 #### Dependencies
@@ -99,13 +94,14 @@ info: All done
 ```
 
 ### API Usage
+
 ```js
-var audiosprite = require('audiosprite')
+var audiosprite = require('src/audiosprite')
 
 var files = ['file1.mp3', 'file2.mp3']
-var opts = {output: 'result'}
+var opts = { output: 'result' }
 
-audiosprite(files, opts, function(err, obj) {
+audiosprite(files, opts, function (err, obj) {
   if (err) return console.error(err)
 
   console.log(JSON.stringify(obj, null, 2))

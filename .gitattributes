@@ -1,1 +1,5 @@
-cli.js eol=lf
+# auto detect text files and normalize eol
+* text=auto eol=lf
+
+### Text Files ###
+*.js text eol=lf whitespace=trailing-space,space-before-tab,tab-in-indent,tabwidth=2
