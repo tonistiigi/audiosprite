@@ -4,16 +4,23 @@
   "keywords": [
     "audio",
     "audio-sprite",
+    "audiosprite",
     "jukebox",
-    "ffmpeg"
+    "ffmpeg",
+    "howler",
+    "howler2"
   ],
   "author": "Anton Pavlov <aapavlov1994@gmail.com>",
   "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/tonistiigi/audiosprite.git"
+    "url": "https://github.com/aapavlov1994/audiosprite-fresh.git"
   },
+  "bugs": {
+    "url": "https://github.com/aapavlov1994/audiosprite-fresh/issues"
+  },
+  "homepage": "https://github.com/aapavlov1994/audiosprite-fresh#readme",
   "main": "src/index.js",
   "files": [
     "src"
