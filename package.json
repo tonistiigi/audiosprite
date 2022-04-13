@@ -1,5 +1,5 @@
 {
-  "name": "audiosprite-fresh",
+  "name": "audiosprite-breezy",
   "description": "Concat small audio files into single file and export in many formats.",
   "keywords": [
     "audio",
@@ -15,12 +15,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aapavlov1994/audiosprite-fresh.git"
+    "url": "https://github.com/aapavlov1994/audiosprite-breezy.git"
   },
   "bugs": {
-    "url": "https://github.com/aapavlov1994/audiosprite-fresh/issues"
+    "url": "https://github.com/aapavlov1994/audiosprite-breezy/issues"
   },
-  "homepage": "https://github.com/aapavlov1994/audiosprite-fresh#readme",
+  "homepage": "https://github.com/aapavlov1994/audiosprite-breezy#readme",
   "main": "src/index.js",
   "files": [
     "src"
