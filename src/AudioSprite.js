@@ -334,7 +334,7 @@ module.exports = class AudioSpriteCreator {
 
   exportRawFiles(
     options,
-    rawparts = this.options.rawparts.length ? this.options.rawparts.split(',') : null,
+    rawparts = this.options.rawparts.length ? this.options.rawparts.split(',') : [],
   ) {
     const {
       temp, path: exportPath, store,
