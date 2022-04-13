@@ -1,3 +1,5 @@
+# audiosprite-breezy
+
 ### What?
 
 This is a `ffmpeg` wrapper that will take in **multiple audio files** and combines them **into a single file**. Silent gaps will be put between the parts so that every new part starts from full second and there is at least 1 second pause between every part. The final file will be exported in `mp3`, `ogg`, `ac3`, `m4a` and `caf`(IMA-ADPCM) to support as many devices as possible. This tool will also generate a `JSON` file that is compatible with [Howler.js](https://github.com/goldfire/howler.js) or [zynga/jukebox](https://github.com/zynga/jukebox) framework.
@@ -9,11 +11,11 @@ iOS, Windows Phone and some Android phones have very limited HTML5 audio support
 ### Usage
 
 ```
-npm install audiosprite-fresh
+npm install audiosprite-breezy
 ```
 
 ```js
-var audiosprite = require('audiosprite-fresh')
+var audiosprite = require('audiosprite-breezy')
 
 var files = ['file1.mp3', 'file2.mp3']
 var opts = { output: 'result' }
