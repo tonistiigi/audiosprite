@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const winston = require('winston');
 const audiosprite = require('./index');
 const argv = require('./getArgs');
