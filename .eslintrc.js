@@ -1,19 +1,16 @@
-const OFF = 'off';
-
 module.exports = {
   root: true,
+  parser: '@typescript-eslint/parser',
   env: {
     node: true,
   },
-  plugins: ['import'],
+  plugins: [
+    '@typescript-eslint',
+  ],
   extends: [
-    'airbnb-base',
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    // 'airbnb-base',
     'plugin:sonarjs/recommended',
   ],
-  rules: {
-    'no-console': OFF,
-  },
-  parserOptions: {
-    parser: 'babel-eslint',
-  },
 };
