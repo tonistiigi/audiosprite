@@ -39,8 +39,7 @@ export function getExportFormatsOptions(options: Options): Export {
 }
 
 export function getPromisesChain(...promiseFunctions: Array<(() => Promise<void>)>): Promise<void> {
-  return promiseFunctions.reduce((promiseChain, currentPromiseFunction) => {
-    promiseChain.then(currentPromiseFunction);
-    return promiseChain;
-  }, Promise.resolve())
+  return promiseFunctions.reduce((promiseChain, currentPromiseFunction) => (
+    promiseChain.then(currentPromiseFunction)
+), Promise.resolve())
 }

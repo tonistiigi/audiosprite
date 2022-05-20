@@ -4,17 +4,17 @@ import AudiosSpriteCreator from './AudiosSpriteCreator';
 function createSprite(
   paths: Array<string>,
   options: Options,
-): Promise<DefaultOutput | HowlerOutput | Howler2Output | CreateJSOutput | void> {
+): Promise<DefaultOutput | HowlerOutput | Howler2Output | CreateJSOutput> {
   return new Promise((resolve, reject) => {
     const creator = new AudiosSpriteCreator(paths, options);
     creator.checkFiles()
-        .then(creator.createOutputDir)
-        .then(creator.checkFFMpeg)
-        .then(creator.prepare)
-        .then(creator.processFiles)
-        .then(creator.exportFiles)
-        .then(creator.exportJson)
-        .catch(reject);
+        .then(() => creator.createOutputDir())
+        .then(() => creator.checkFFMpeg())
+        .then(() => creator.prepare())
+        .then(() => creator.processFiles())
+        .then(() => creator.exportFiles())
+        .then(() => creator.exportJson())
+        .then(resolve, reject);
   });
 }
 

@@ -51,6 +51,6 @@
   "scripts": {
     "test": "mocha",
     "lint": "eslint ./src ./test",
-    "build": "tsc"
+    "build": "tsc "
   }
 }
