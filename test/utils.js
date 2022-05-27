@@ -67,12 +67,12 @@ function checkOutput(audiosprite, done) {
 
     // Test rawparts.
 
-    file = path.join(TMPDIR, `${OUTPUT}_001.mp3`);
+    file = path.join(TMPDIR, `${OUTPUT}_0.mp3`);
     assert.ok(fs.existsSync(file), 'no beep raw part file found');
     stat = fs.statSync(file);
     assert.ok(stat.size > 10000, 'beep raw part too small');
 
-    file = path.join(TMPDIR, `${OUTPUT}_002.mp3`);
+    file = path.join(TMPDIR, `${OUTPUT}_1.mp3`);
     assert.ok(fs.existsSync(file), 'no boop raw part file found');
     stat = fs.statSync(file);
     assert.ok(stat.size > 10000, 'boop raw part too small');
@@ -106,7 +106,7 @@ function scriptSpawnTemplate(...soundsPaths) {
 }
 
 function defaultTest(done) {
-  this.timeout(10000);
+  this.timeout(100000);
   process.chdir(TMPDIR);
   const audiosprite = scriptSpawnTemplate(...sounds);
   checkOutput(audiosprite, done);

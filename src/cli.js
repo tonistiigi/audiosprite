@@ -3,7 +3,7 @@
 const fs = require('fs');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const winston = require('winston');
-const audiosprite = require('./index');
+const audiosprite = require('../build/index');
 const argv = require('./getArgs');
 
 const opts = { ...argv };
@@ -38,13 +38,17 @@ if (argv.help || !files.length) {
   process.exit(1);
 }
 
-audiosprite(files, opts, (err, obj) => {
-  if (err) {
-    winston.error(err);
-    process.exit(0);
-  }
-  const jsonfile = `${opts.output}.json`;
-  fs.writeFileSync(jsonfile, JSON.stringify(obj, null, 2));
-  winston.info('Exported json OK', { file: jsonfile });
-  winston.info('All done');
-});
+audiosprite(files, opts)
+  .then(
+    (obj) => {
+      console.log(obj);
+      const jsonfile = `${opts.output}.json`;
+      fs.writeFileSync(jsonfile, JSON.stringify(obj, null, 2));
+      winston.info('Exported json OK', { file: jsonfile });
+      winston.info('All done');
+    },
+    (err) => {
+      winston.error(err);
+      process.exit(0);
+    }
+  )

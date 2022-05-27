@@ -23,7 +23,7 @@ const minimistConfig = {
   default: {
     output: 'output', //  'Name for the output files.'
     path: '', //  'Path for files to be used on final JSON.'
-    export: 'ogg,m4a,mp3,ac3', //  'Limit exported file types. Comma separated extension list.'
+    export: ['ogg','m4a','mp3','ac3'], //  'Limit exported file types. Comma separated extension list.'
     format: 'jukebox', //  'Format of the output JSON file (jukebox, howler, howler2, createjs).'
     log: 'info', //  'Log level (debug, info, notice, warning, error).'
     autoplay: null, //  'Autoplay sprite name.'
