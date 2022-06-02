@@ -1,7 +1,7 @@
 const path = require('path');
 const os = require('os');
 
-const AUDIOSPRITE_PATH = path.join(__dirname, '../src', 'cli.js');
+const AUDIOSPRITE_PATH = path.join(__dirname, '../test', 'cli.js');
 const OUTPUT = `audiosprite-test-out${Math.trunc((Math.random() * 1e6))}`;
 const TMPDIR = os.tmpdir() || '.';
 

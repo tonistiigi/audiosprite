@@ -13,5 +13,4 @@ module.exports = {
     // 'airbnb-base',
     'plugin:sonarjs/recommended',
   ],
-  ignorePatterns: ["build"],
 };

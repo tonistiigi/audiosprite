@@ -50,5 +50,5 @@ audiosprite(files, opts)
     (err) => {
       winston.error(err);
       process.exit(0);
-    }
-  )
+    },
+  );
