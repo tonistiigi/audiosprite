@@ -22,4 +22,5 @@ jobs:
             mv ffmpeg-*.*.*-amd64-static ffmpeg
             export PATH=$PATH:$PWD/ffmpeg
             ffmpeg -version
+            npm run build
             npm run test
