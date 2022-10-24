@@ -24,7 +24,7 @@ npm install -g git+https://github.com/tonistiigi/audiosprite.git
 You can install `FFmpeg` and the `ogg` codecs on OSX using `brew`:
 
 ```
-brew install ffmpeg --with-theora --with-libvorbis
+brew install ffmpeg
 ```
 
 #### Hints for Windows users
